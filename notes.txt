@@ -1,0 +1,35 @@
+Add a logo
+
+Add flutter_launcher_icons Plugin to pubspec.yaml
+
+e.g.
+
+dev_dependencies: 
+  flutter_test:
+    sdk: flutter
+
+  flutter_launcher_icons: "^0.9.0"
+
+flutter_icons:
+  image_path: "icon/icon.png" 
+  android: true
+  ios: true
+  # optionally, as transparency is not allowed on app store
+  # remove_alpha_ios: true
+2. Prepare an app icon for the specified path. e.g. icon/icon.png
+
+3. Execute command on the terminal to Create app icons:
+
+$ flutter pub get
+
+$ flutter pub run flutter_launcher_icons:main
+
+To check check all available options and to set different icons for android and iOS please refer this
+
+Update:
+
+flutter_launcher_icons 0.8.0 Version (12th Sept 2020) has Added flavours support
+
+Flavors are typically used to build your app for different environments such as dev and prod
+
+The community has written some articles and packages you might find useful. These articles address flavors for both iOS and Android.
