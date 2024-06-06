@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'notification_controller.dart';
+import 'package:intl/intl.dart';  // Import the intl package
+
 
 void main() async {
   await AwesomeNotifications().initialize(null, [
@@ -99,7 +101,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
       {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
-      {'start': '15:19', 'end': '22:50', 'period': 'Period 7'},
+      {'start': '15:19', 'end': '23:50', 'period': 'Period 7'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -145,8 +147,10 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    String formattedTime =
-        '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+    //String formattedTime =
+    //    '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+    
+    String formattedTime = DateFormat('hh:mm:ss a').format(now);  // Format time to 12-hour format with AM/PM
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
