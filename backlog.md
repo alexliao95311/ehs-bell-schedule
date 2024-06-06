@@ -8,8 +8,6 @@
 - allow users to choose if they have zero period/7th period
 - add widget funcitonality to home screen
 - add bottom text saying "sponsored by EHS PFSO" that pops up a page about the sponsorship
-- remove current time and instead put the start/end time for class 
-  --> order: [day schedule], [period name], [period startend + duration], [time left]
 
 **Future Features**
 - live action notification** (better than dhs haha)

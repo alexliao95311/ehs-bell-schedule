@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
   String _currentTime = '';
   String _timeLeft = '';
   String _currentSchedule = '';
+  String _periodDuration = '';
   bool notificationSent = false;
   bool notificationsEnabled = true;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
@@ -74,7 +75,6 @@ class _HomePageState extends State<HomePage> {
     'Period 4': 'Period 4',
     'Period 5': 'Period 5',
     'Period 6': 'Period 6',
-    'Period 7': 'Period 7',
   };
 
   final Map<String, List<Map<String, String>>> schedules = {
@@ -132,6 +132,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
       {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
+      {'start': '15:03', 'end': '15:53', 'period': 'Period 1'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -188,7 +189,9 @@ class _HomePageState extends State<HomePage> {
 
     String currentClass = 'No Class';
     String timeLeft = '';
+    String periodDuration = '';
     DateTime? notificationTime;
+    
 
     for (var period in schedule) {
       DateTime start = DateTime(now.year, now.month, now.day,
@@ -201,6 +204,7 @@ class _HomePageState extends State<HomePage> {
       if (now.isAfter(start) && now.isBefore(end)) {
         currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
+        periodDuration = '${DateFormat('hh:mm a').format(start)} - ${DateFormat('hh:mm a').format(end)}';
         notificationTime = end.subtract(Duration(minutes: notificationTimeBeforeEnd));
         break;
       }
@@ -213,6 +217,7 @@ class _HomePageState extends State<HomePage> {
       _currentClass = currentClass;
       _timeLeft = timeLeft;
       _currentSchedule = currentSchedule;
+      _periodDuration = periodDuration;
     });
 
     if (notificationsEnabled && notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
@@ -337,29 +342,26 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(height: 120),
+            const SizedBox(height: 150),
             if (_currentSchedule != 'No schedule')
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
                   _currentSchedule,
-                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+                  style: const TextStyle(fontSize: 24, color: Colors.white),
                 ),
               ),
-            const SizedBox(height: 40),
-            const Text(
-              'Current Time:',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            Text(
-              _currentTime,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Text(
               _currentClass,
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
             ),
+            const SizedBox(height: 10),
+            if (_currentClass != 'No Class')
+              Text(
+                _periodDuration,
+                style: const TextStyle(fontSize: 26, color: Colors.white),
+              ),
             const SizedBox(height: 20),
             if (_currentClass != 'No Class')
               const Text(
@@ -580,7 +582,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
     _notificationsEnabled = widget.notificationsEnabled;
     _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
