@@ -100,8 +100,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
       {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
-      {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
-      {'start': '15:19', 'end': '23:50', 'period': 'Period 7'},
+      {'start': '13:43', 'end': '15:13', 'period': 'Period 5'}
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
