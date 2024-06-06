@@ -41,7 +41,7 @@ class BellScheduleApp extends StatelessWidget {
       title: 'EHS Bell Schedule',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Colors.green.shade900,
+        scaffoldBackgroundColor: Color.fromARGB(255, 2, 51, 2),
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
         ),
@@ -64,6 +64,7 @@ class _HomePageState extends State<HomePage> {
   String _timeLeft = '';
   String _currentSchedule = '';
   bool notificationSent = false;
+  bool notificationsEnabled = true;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
@@ -169,10 +170,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
     super.initState();
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
@@ -180,7 +181,7 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    String formattedTime = DateFormat('hh:mm:ss a').format(now); // Format time to 12-hour format with AM/PM
+    String formattedTime = DateFormat('hh:mm:ss a').format(now);  // Format time to 12-hour format with AM/PM
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
@@ -190,9 +191,11 @@ class _HomePageState extends State<HomePage> {
     DateTime? notificationTime;
 
     for (var period in schedule) {
-      DateTime start = DateTime(now.year, now.month, now.day, int.parse(period['start']!.split(':')[0]),
+      DateTime start = DateTime(now.year, now.month, now.day,
+          int.parse(period['start']!.split(':')[0]),
           int.parse(period['start']!.split(':')[1]));
-      DateTime end = DateTime(now.year, now.month, now.day, int.parse(period['end']!.split(':')[0]),
+      DateTime end = DateTime(now.year, now.month, now.day,
+          int.parse(period['end']!.split(':')[0]),
           int.parse(period['end']!.split(':')[1]));
 
       if (now.isAfter(start) && now.isBefore(end)) {
@@ -212,7 +215,7 @@ class _HomePageState extends State<HomePage> {
       _currentSchedule = currentSchedule;
     });
 
-    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+    if (notificationsEnabled && notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
@@ -279,7 +282,13 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => SettingsPage(
           customClassNames: customClassNames,
           testNotificationCallback: _testNotification,
+          notificationsEnabled: notificationsEnabled,
           notificationTimeBeforeEnd: notificationTimeBeforeEnd,
+          onNotificationsChanged: (bool value) {
+            setState(() {
+              notificationsEnabled = value;
+            });
+          },
           onNotificationTimeChanged: (int value) {
             setState(() {
               notificationTimeBeforeEnd = value;
@@ -315,7 +324,7 @@ class _HomePageState extends State<HomePage> {
           'EHS Bell Schedule',
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: const Color(0xFF004d00),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
@@ -372,13 +381,17 @@ class _HomePageState extends State<HomePage> {
 class SettingsPage extends StatelessWidget {
   final Map<String, String> customClassNames;
   final VoidCallback testNotificationCallback;
+  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
+  final ValueChanged<bool> onNotificationsChanged;
   final ValueChanged<int> onNotificationTimeChanged;
 
   SettingsPage({
     required this.customClassNames,
     required this.testNotificationCallback,
+    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
+    required this.onNotificationsChanged,
     required this.onNotificationTimeChanged,
   });
 
@@ -387,7 +400,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF004d00),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Column(
@@ -418,7 +431,9 @@ class SettingsPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => NotificationsPage(
                     testNotificationCallback: testNotificationCallback,
+                    notificationsEnabled: notificationsEnabled,
                     notificationTimeBeforeEnd: notificationTimeBeforeEnd,
+                    onNotificationsChanged: onNotificationsChanged,
                     onNotificationTimeChanged: onNotificationTimeChanged,
                   ),
                 ),
@@ -478,7 +493,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF004d00),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
@@ -538,12 +553,16 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
 
 class NotificationsPage extends StatefulWidget {
   final VoidCallback testNotificationCallback;
+  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
+  final ValueChanged<bool> onNotificationsChanged;
   final ValueChanged<int> onNotificationTimeChanged;
 
   NotificationsPage({
     required this.testNotificationCallback,
+    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
+    required this.onNotificationsChanged,
     required this.onNotificationTimeChanged,
   });
 
@@ -552,11 +571,13 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
+  bool _notificationsEnabled = false;
   int _notificationTimeBeforeEnd = 2; // Default to 2 minutes
 
   @override
   void initState() {
     super.initState();
+    _notificationsEnabled = widget.notificationsEnabled;
     _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
   }
 
@@ -565,7 +586,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF004d00),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Padding(
@@ -576,15 +597,33 @@ class _NotificationsPageState extends State<NotificationsPage> {
             const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
             DropdownButtonFormField<int>(
               value: _notificationTimeBeforeEnd,
-              items: [
-                DropdownMenuItem(value: 0, child: Text('No notification', style: TextStyle(color: Colors.black))),
-                DropdownMenuItem(value: 1, child: Text('30 seconds', style: TextStyle(color: Colors.black))),
-                DropdownMenuItem(value: 2, child: Text('1 minute', style: TextStyle(color: Colors.black))),
-                DropdownMenuItem(value: 3, child: Text('2 minutes', style: TextStyle(color: Colors.black))),
-                DropdownMenuItem(value: 4, child: Text('3 minutes', style: TextStyle(color: Colors.black))),
-                DropdownMenuItem(value: 5, child: Text('5 minutes', style: TextStyle(color: Colors.black))),
+              items: const [
+                DropdownMenuItem(
+                  child: Text('No Notification'),
+                  value: -1,
+                ),
+                DropdownMenuItem(
+                  child: Text('30 seconds'),
+                  value: 0,
+                ),
+                DropdownMenuItem(
+                  child: Text('1 minute'),
+                  value: 1,
+                ),
+                DropdownMenuItem(
+                  child: Text('2 minutes'),
+                  value: 2,
+                ),
+                DropdownMenuItem(
+                  child: Text('3 minutes'),
+                  value: 3,
+                ),
+                DropdownMenuItem(
+                  child: Text('5 minutes'),
+                  value: 5,
+                ),
               ],
-              onChanged: (value) {
+              onChanged: (int? value) {
                 setState(() {
                   _notificationTimeBeforeEnd = value!;
                 });
@@ -592,9 +631,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
               },
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Color.fromARGB(255, 33, 59, 34),
                 border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
+              style: TextStyle(color: Colors.white),
+              dropdownColor: Color.fromARGB(255, 33, 59, 34),
             ),
             const SizedBox(height: 20),
             Center(
@@ -616,12 +664,26 @@ class AboutPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About', style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xFF004d00),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Center(
-        child: const Text('About this app', style: TextStyle(color: Colors.white)),
+        child: Container(
+          margin: const EdgeInsets.all(16.0),
+          alignment: Alignment.center,
+          child: const Text(
+            'Developed by Alex Liao\n'
+            'Designed by Sanjana Gowda, Shely Jain, Jan Palma, Jack Wu\n\n'
+            'From the first graduating class of Emerald High, Class of 2027.',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18.0,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
       ),
     );
   }
 }
+
