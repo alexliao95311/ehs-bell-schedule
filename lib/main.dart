@@ -1,7 +1,28 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-void main() {
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'notification_controller.dart';
+void main() async{
+  await AwesomeNotifications().initialize(null, [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Basic notifications channel',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        channelGroupKey: "basic_channel_group"
+      )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group',
+        channelGroupName: 'Basic Group',
+      )
+    ]);
+    bool isAllowedToSendNotification = await AwesomeNotifications().isNotificationAllowed();
+    if (!isAllowedToSendNotification) {
+      AwesomeNotifications().requestPermissionToSendNotifications();
+    }
   runApp(const BellScheduleApp());
 }
 
@@ -99,8 +120,13 @@ class _HomePageState extends State<HomePage> {
     ],
   };
 
-   @override
+  @override
   void initState() {
+    AwesomeNotifications().setListeners(
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
     super.initState();
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
@@ -190,61 +216,74 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'EHS Bell Schedule',
-          style: TextStyle(color: Colors.white), // White title color
-        ),
-        backgroundColor: const Color(0xFF004d00), // Dark green background
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(
+      title: const Text(
+        'EHS Bell Schedule',
+        style: TextStyle(color: Colors.white), // White title color
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start, // Align items to the start of the column
-          crossAxisAlignment: CrossAxisAlignment.center, // Center the items horizontally
-          children: <Widget>[
-            const SizedBox(height: 120),
-            if (_currentSchedule != 'No schedule') // Check if there's a schedule
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _currentSchedule,
-                  style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-              ),
-            const SizedBox(height: 40), // Increased space between schedule and time
-            const Text(
-              'Current Time:',
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-            Text(
-              _currentTime,
-              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
-            //const Text(
-            //  'Current Class:',
-            //  style: TextStyle(fontSize: 20, color: Colors.white),
-            //),
-            Text(
-              _currentClass,
-              style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 20),
-            if (_currentClass != 'No Class')
-              const Text(
-                'Time Left:',
-                style: TextStyle(fontSize: 20, color: Colors.white),
-              ),
-            if (_currentClass != 'No Class')
-              Text(
-                _timeLeft,
+      backgroundColor: const Color(0xFF004d00), // Dark green background
+    ),
+    body: Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start, // Align items to the start of the column
+        crossAxisAlignment: CrossAxisAlignment.center, // Center the items horizontally
+        children: <Widget>[
+          const SizedBox(height: 120),
+          if (_currentSchedule != 'No schedule') // Check if there's a schedule
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                _currentSchedule,
                 style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-          ],
-        ),
+            ),
+          const SizedBox(height: 40), // Increased space between schedule and time
+          const Text(
+            'Current Time:',
+            style: TextStyle(fontSize: 20, color: Colors.white),
+          ),
+          Text(
+            _currentTime,
+            style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 20),
+          //const Text(
+          //  'Current Class:',
+          //  style: TextStyle(fontSize: 20, color: Colors.white),
+          //),
+          Text(
+            _currentClass,
+            style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.white),
+          ),
+          const SizedBox(height: 20),
+          if (_currentClass != 'No Class')
+            const Text(
+              'Time Left:',
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+          if (_currentClass != 'No Class')
+            Text(
+              _timeLeft,
+              style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+            ),
+          ElevatedButton(
+            onPressed: () {
+              AwesomeNotifications().createNotification(
+                content: NotificationContent(
+                  id: 1,
+                  channelKey: 'basic_channel',
+                  title: 'EHS Bell Schedule',
+                  body: 'Test notification!',
+                ),
+              );
+            },
+            child: const Text('Send Notification'),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }
