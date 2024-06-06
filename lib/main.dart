@@ -57,6 +57,7 @@ class _HomePageState extends State<HomePage> {
   String _currentTime = '';
   String _timeLeft = '';
   String _currentSchedule = '';
+  bool notificationSent = false; // Add this line at the beginning of the _HomePageState class
 
   final Map<String, List<Map<String, String>>> schedules = {
     'Monday': [
@@ -86,6 +87,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
       {'start': '13:43', 'end': '15:13', 'period': '5'},
+      {'start': '15:19', 'end': '22:13', 'period': '10'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': '0'},
@@ -114,10 +116,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '11:08', 'end': '11:18', 'period': 'Brunch'},
       {'start': '11:24', 'end': '11:59', 'period': '5'},
       {'start': '12:05', 'end': '12:40', 'period': '6'},
-    ],
-    'Sunday' : [
-      {'start': '20:00', 'end': '23:00', 'period': '10'},
-    ],
+    ]
   };
 
   @override
@@ -132,28 +131,32 @@ class _HomePageState extends State<HomePage> {
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
   }
 
+    
+
   void _updateTimeAndClass() {
-    // Uncomment the line below and replace 'YYYY-MM-DD HH:MM:SS' with your desired date and time
-    //DateTime now = DateTime.parse('2024-05-31T09:11:23');
-
-    // Comment out the line below if you're using the custom date and time above
     DateTime now = DateTime.now();
-
-    String formattedTime = '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+    String formattedTime =
+        '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
 
     String currentClass = 'No Class';
     String timeLeft = '';
+    DateTime? notificationTime; // Nullable DateTime
 
     for (var period in schedule) {
-      DateTime start = DateTime(now.year, now.month, now.day, int.parse(period['start']!.split(':')[0]), int.parse(period['start']!.split(':')[1]));
-      DateTime end = DateTime(now.year, now.month, now.day, int.parse(period['end']!.split(':')[0]), int.parse(period['end']!.split(':')[1]));
+      DateTime start = DateTime(now.year, now.month, now.day,
+          int.parse(period['start']!.split(':')[0]),
+          int.parse(period['start']!.split(':')[1]));
+      DateTime end = DateTime(now.year, now.month, now.day,
+          int.parse(period['end']!.split(':')[0]),
+          int.parse(period['end']!.split(':')[1]));
 
       if (now.isAfter(start) && now.isBefore(end)) {
         currentClass = 'Period ${period['period']}';
         timeLeft = _formatDuration(end.difference(now));
+        notificationTime = end.subtract(Duration(minutes: 2)); // Two minutes before the end of the class
         break;
       }
     }
@@ -166,7 +169,23 @@ class _HomePageState extends State<HomePage> {
       _timeLeft = timeLeft;
       _currentSchedule = currentSchedule;
     });
+
+    // Check if it's time to send the notification and if it hasn't been sent already
+    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+      AwesomeNotifications().createNotification(
+        content: NotificationContent(
+          id: 1,
+          channelKey: 'basic_channel',
+          title: 'EHS Bell Schedule',
+          body: '$_currentClass ends in 2 minutes!',
+        ),
+      );
+      notificationSent = true; // Set the flag to true to indicate that the notification has been sent
+    }
   }
+
+
+
 
   String _getDayOfWeek(DateTime now) {
     switch (now.weekday) {
@@ -279,7 +298,7 @@ Widget build(BuildContext context) {
                 ),
               );
             },
-            child: const Text('Send Notification'),
+            child: const Text('Test Notification'),
           ),
         ],
       ),
