@@ -1,27 +1,29 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:intl/intl.dart';
 import 'notification_controller.dart';
-import 'package:intl/intl.dart';  // Import the intl package
-
 
 void main() async {
-  await AwesomeNotifications().initialize(null, [
-    NotificationChannel(
-      channelKey: 'basic_channel',
-      channelName: 'Basic notifications',
-      channelDescription: 'Basic notifications channel',
-      defaultColor: Color(0xFF9D50DD),
-      ledColor: Colors.white,
-      channelGroupKey: "basic_channel_group"
-    )
-  ],
-  channelGroups: [
-    NotificationChannelGroup(
-      channelGroupKey: 'basic_channel_group',
-      channelGroupName: 'Basic Group',
-    )
-  ]);
+  await AwesomeNotifications().initialize(
+    null,
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic notifications',
+        channelDescription: 'Basic notifications channel',
+        defaultColor: Color(0xFF9D50DD),
+        ledColor: Colors.white,
+        channelGroupKey: "basic_channel_group",
+      )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+        channelGroupKey: 'basic_channel_group',
+        channelGroupName: 'Basic Group',
+      )
+    ],
+  );
 
   bool isAllowedToSendNotification = await AwesomeNotifications().isNotificationAllowed();
   if (!isAllowedToSendNotification) {
@@ -100,7 +102,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
       {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
-      {'start': '13:43', 'end': '15:13', 'period': 'Period 5'}
+      {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -146,9 +148,6 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    //String formattedTime =
-    //    '${now.hour}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
-    
     String formattedTime = DateFormat('hh:mm:ss a').format(now);  // Format time to 12-hour format with AM/PM
 
     String day = _getDayOfWeek(now);
@@ -167,7 +166,7 @@ class _HomePageState extends State<HomePage> {
           int.parse(period['end']!.split(':')[1]));
 
       if (now.isAfter(start) && now.isBefore(end)) {
-        currentClass = customClassNames[period['period']!] ?? period['period']!;
+        currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
         notificationTime = end.subtract(Duration(minutes: 2));
         break;
@@ -243,18 +242,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _openSettings() async {
-    final result = await Navigator.push(
+  void _openSettings() {
+    Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SettingsPage(customClassNames: customClassNames),
+        builder: (context) => SettingsPage(customClassNames: customClassNames, testNotificationCallback: _testNotification),
+      ),
+    ).then((result) {
+      if (result != null) {
+        setState(() {
+          customClassNames = result;
+        });
+      }
+    });
+  }
+
+  void _testNotification() {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 1,
+        channelKey: 'basic_channel',
+        title: 'EHS Bell Schedule',
+        body: 'Test notification!',
       ),
     );
-    if (result != null) {
-      setState(() {
-        customClassNames = result;
-      });
-    }
   }
 
   @override
@@ -312,19 +323,6 @@ class _HomePageState extends State<HomePage> {
                 _timeLeft,
                 style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
               ),
-            ElevatedButton(
-              onPressed: () {
-                AwesomeNotifications().createNotification(
-                  content: NotificationContent(
-                    id: 1,
-                    channelKey: 'basic_channel',
-                    title: 'EHS Bell Schedule',
-                    body: 'Test notification!',
-                  ),
-                );
-              },
-              child: const Text('Test Notification'),
-            ),
           ],
         ),
       ),
@@ -332,16 +330,79 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class SettingsPage extends StatefulWidget {
+class SettingsPage extends StatelessWidget {
   final Map<String, String> customClassNames;
+  final VoidCallback testNotificationCallback;
 
-  SettingsPage({required this.customClassNames});
+  SettingsPage({required this.customClassNames, required this.testNotificationCallback});
 
   @override
-  _SettingsPageState createState() => _SettingsPageState();
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF004d00),
+      ),
+      body: Column(
+        children: [
+          ListTile(
+            title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditClassNamesPage(customClassNames: customClassNames),
+                ),
+              ).then((result) {
+                if (result != null) {
+                  Navigator.pop(context, result);
+                }
+              });
+            },
+          ),
+          const Divider(color: Colors.white, height: 2),
+          ListTile(
+            title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotificationsPage(testNotificationCallback: testNotificationCallback),
+                ),
+              );
+            },
+          ),
+          const Divider(color: Colors.white, height: 2),
+          ListTile(
+            title: const Text('About', style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AboutPage(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
 }
 
-class _SettingsPageState extends State<SettingsPage> {
+class EditClassNamesPage extends StatefulWidget {
+  final Map<String, String> customClassNames;
+
+  EditClassNamesPage({required this.customClassNames});
+
+  @override
+  _EditClassNamesPageState createState() => _EditClassNamesPageState();
+}
+
+class _EditClassNamesPageState extends State<EditClassNamesPage> {
   late Map<String, TextEditingController> _controllers;
 
   @override
@@ -365,7 +426,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(color: Colors.white)),
+        title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF004d00),
       ),
       body: ListView(
@@ -393,18 +454,55 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             );
           }).toList(),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              Map<String, String> updatedNames = {
+                for (var period in _controllers.keys)
+                  period: _controllers[period]!.text,
+              };
+              Navigator.pop(context, updatedNames);
+            },
+            child: const Text('Save Class Names'),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Map<String, String> updatedNames = {
-            for (var period in _controllers.keys)
-              period: _controllers[period]!.text,
-          };
-          Navigator.pop(context, updatedNames);
-        },
-        child: const Icon(Icons.save),
-        backgroundColor: Color.fromARGB(255, 107, 242, 107),
+    );
+  }
+}
+
+class NotificationsPage extends StatelessWidget {
+  final VoidCallback testNotificationCallback;
+
+  NotificationsPage({required this.testNotificationCallback});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF004d00),
+      ),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: testNotificationCallback,
+          child: const Text('Test Notification'),
+        ),
+      ),
+    );
+  }
+}
+
+class AboutPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('About', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF004d00),
+      ),
+      body: Center(
+        child: const Text('About this app', style: TextStyle(color: Colors.white)),
       ),
     );
   }
