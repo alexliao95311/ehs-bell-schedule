@@ -78,58 +78,89 @@ class _HomePageState extends State<HomePage> {
   final Map<String, List<Map<String, String>>> schedules = {
     'Monday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
       {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Tuesday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
       {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Wednesday': [
       {'start': '08:00', 'end': '09:00', 'period': 'Staff Collaboration'},
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
+      {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
       {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
+      {'start': '12:36', 'end': '12:42', 'period': 'Passing Period'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
+      {'start': '13:37', 'end': '13:43', 'period': 'Passing Period'},
       {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '10:00', 'period': 'Period 2'},
+      {'start': '10:00', 'end': '10:06', 'period': 'Passing Period'},
       {'start': '10:06', 'end': '11:36', 'period': 'Period 4'},
       {'start': '11:36', 'end': '12:06', 'period': 'Lunch'},
+      {'start': '12:06', 'end': '12:12', 'period': 'Passing Period'},
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
+      {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
       {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Minimum Day': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:05', 'period': 'Period 1'},
+      {'start': '09:05', 'end': '09:11', 'period': 'Passing Period'},
       {'start': '09:11', 'end': '09:46', 'period': 'Period 2'},
+      {'start': '09:46', 'end': '09:52', 'period': 'Passing Period'},
       {'start': '09:52', 'end': '10:27', 'period': 'Period 3'},
+      {'start': '10:27', 'end': '10:33', 'period': 'Passing Period'},
       {'start': '10:33', 'end': '11:08', 'period': 'Period 4'},
       {'start': '11:08', 'end': '11:18', 'period': 'Brunch'},
+      {'start': '11:18', 'end': '11:24', 'period': 'Passing Period'},
       {'start': '11:24', 'end': '11:59', 'period': 'Period 5'},
+      {'start': '11:59', 'end': '12:05', 'period': 'Passing Period'},
       {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
     ]
   };
@@ -342,6 +373,7 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF004d00),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Column(
         children: [
@@ -412,6 +444,12 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
       for (var period in widget.customClassNames.keys)
         period: TextEditingController(text: widget.customClassNames[period]),
     };
+
+    for (var controller in _controllers.values) {
+      controller.addListener(() {
+        setState(() {}); // Update the state to show/hide the clear button
+      });
+    }
   }
 
   @override
@@ -428,6 +466,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
       appBar: AppBar(
         title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF004d00),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -449,6 +488,14 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
                   filled: true,
                   fillColor: Color.fromARGB(255, 39, 59, 40).withOpacity(0.3),
                   border: OutlineInputBorder(),
+                  suffixIcon: _controllers[period]!.text.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: Colors.white),
+                          onPressed: () {
+                            _controllers[period]!.clear();
+                          },
+                        )
+                      : null,
                 ),
                 style: const TextStyle(color: Colors.white),
               ),
@@ -482,6 +529,7 @@ class NotificationsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Notifications', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF004d00),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Center(
         child: ElevatedButton(
@@ -500,6 +548,7 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('About', style: TextStyle(color: Colors.white)),
         backgroundColor: const Color(0xFF004d00),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Center(
         child: const Text('About this app', style: TextStyle(color: Colors.white)),
