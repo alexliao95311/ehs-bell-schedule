@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
   String _timeLeft = '';
   String _currentSchedule = '';
   bool notificationSent = false;
-  bool notificationsEnabled = true;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
@@ -170,10 +169,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
     super.initState();
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
@@ -181,7 +180,7 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    String formattedTime = DateFormat('hh:mm:ss a').format(now);  // Format time to 12-hour format with AM/PM
+    String formattedTime = DateFormat('hh:mm:ss a').format(now); // Format time to 12-hour format with AM/PM
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
@@ -191,11 +190,9 @@ class _HomePageState extends State<HomePage> {
     DateTime? notificationTime;
 
     for (var period in schedule) {
-      DateTime start = DateTime(now.year, now.month, now.day,
-          int.parse(period['start']!.split(':')[0]),
+      DateTime start = DateTime(now.year, now.month, now.day, int.parse(period['start']!.split(':')[0]),
           int.parse(period['start']!.split(':')[1]));
-      DateTime end = DateTime(now.year, now.month, now.day,
-          int.parse(period['end']!.split(':')[0]),
+      DateTime end = DateTime(now.year, now.month, now.day, int.parse(period['end']!.split(':')[0]),
           int.parse(period['end']!.split(':')[1]));
 
       if (now.isAfter(start) && now.isBefore(end)) {
@@ -215,7 +212,7 @@ class _HomePageState extends State<HomePage> {
       _currentSchedule = currentSchedule;
     });
 
-    if (notificationsEnabled && notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
@@ -282,13 +279,7 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => SettingsPage(
           customClassNames: customClassNames,
           testNotificationCallback: _testNotification,
-          notificationsEnabled: notificationsEnabled,
           notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-          onNotificationsChanged: (bool value) {
-            setState(() {
-              notificationsEnabled = value;
-            });
-          },
           onNotificationTimeChanged: (int value) {
             setState(() {
               notificationTimeBeforeEnd = value;
@@ -381,17 +372,13 @@ class _HomePageState extends State<HomePage> {
 class SettingsPage extends StatelessWidget {
   final Map<String, String> customClassNames;
   final VoidCallback testNotificationCallback;
-  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
-  final ValueChanged<bool> onNotificationsChanged;
   final ValueChanged<int> onNotificationTimeChanged;
 
   SettingsPage({
     required this.customClassNames,
     required this.testNotificationCallback,
-    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
-    required this.onNotificationsChanged,
     required this.onNotificationTimeChanged,
   });
 
@@ -431,9 +418,7 @@ class SettingsPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => NotificationsPage(
                     testNotificationCallback: testNotificationCallback,
-                    notificationsEnabled: notificationsEnabled,
                     notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-                    onNotificationsChanged: onNotificationsChanged,
                     onNotificationTimeChanged: onNotificationTimeChanged,
                   ),
                 ),
@@ -553,16 +538,12 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
 
 class NotificationsPage extends StatefulWidget {
   final VoidCallback testNotificationCallback;
-  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
-  final ValueChanged<bool> onNotificationsChanged;
   final ValueChanged<int> onNotificationTimeChanged;
 
   NotificationsPage({
     required this.testNotificationCallback,
-    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
-    required this.onNotificationsChanged,
     required this.onNotificationTimeChanged,
   });
 
@@ -571,13 +552,11 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  bool _notificationsEnabled = false;
   int _notificationTimeBeforeEnd = 2; // Default to 2 minutes
 
   @override
   void initState() {
     super.initState();
-    _notificationsEnabled = widget.notificationsEnabled;
     _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
   }
 
@@ -594,77 +573,35 @@ class _NotificationsPageState extends State<NotificationsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SwitchListTile(
-              title: const Text('Enable Notifications', style: TextStyle(color: Colors.white)),
-              value: _notificationsEnabled,
-              onChanged: (bool value) {
-                setState(() {
-                  _notificationsEnabled = value;
-                });
-                widget.onNotificationsChanged(value);
-              },
-            ),
-            const SizedBox(height: 20),
             const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
-            RadioListTile<int>(
-              title: const Text('30 seconds', style: TextStyle(color: Colors.white)),
-              value: 0,
-              groupValue: _notificationTimeBeforeEnd,
-              onChanged: (int? value) {
+            DropdownButtonFormField<int>(
+              value: _notificationTimeBeforeEnd,
+              items: [
+                DropdownMenuItem(value: 0, child: Text('No notification', style: TextStyle(color: Colors.black))),
+                DropdownMenuItem(value: 1, child: Text('30 seconds', style: TextStyle(color: Colors.black))),
+                DropdownMenuItem(value: 2, child: Text('1 minute', style: TextStyle(color: Colors.black))),
+                DropdownMenuItem(value: 3, child: Text('2 minutes', style: TextStyle(color: Colors.black))),
+                DropdownMenuItem(value: 4, child: Text('3 minutes', style: TextStyle(color: Colors.black))),
+                DropdownMenuItem(value: 5, child: Text('5 minutes', style: TextStyle(color: Colors.black))),
+              ],
+              onChanged: (value) {
                 setState(() {
                   _notificationTimeBeforeEnd = value!;
                 });
                 widget.onNotificationTimeChanged(value!);
               },
-            ),
-            RadioListTile<int>(
-              title: const Text('1 minute', style: TextStyle(color: Colors.white)),
-              value: 1,
-              groupValue: _notificationTimeBeforeEnd,
-              onChanged: (int? value) {
-                setState(() {
-                  _notificationTimeBeforeEnd = value!;
-                });
-                widget.onNotificationTimeChanged(value!);
-              },
-            ),
-            RadioListTile<int>(
-              title: const Text('2 minutes', style: TextStyle(color: Colors.white)),
-              value: 2,
-              groupValue: _notificationTimeBeforeEnd,
-              onChanged: (int? value) {
-                setState(() {
-                  _notificationTimeBeforeEnd = value!;
-                });
-                widget.onNotificationTimeChanged(value!);
-              },
-            ),
-            RadioListTile<int>(
-              title: const Text('3 minutes', style: TextStyle(color: Colors.white)),
-              value: 3,
-              groupValue: _notificationTimeBeforeEnd,
-              onChanged: (int? value) {
-                setState(() {
-                  _notificationTimeBeforeEnd = value!;
-                });
-                widget.onNotificationTimeChanged(value!);
-              },
-            ),
-            RadioListTile<int>(
-              title: const Text('5 minutes', style: TextStyle(color: Colors.white)),
-              value: 5,
-              groupValue: _notificationTimeBeforeEnd,
-              onChanged: (int? value) {
-                setState(() {
-                  _notificationTimeBeforeEnd = value!;
-                });
-                widget.onNotificationTimeChanged(value!);
-              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(),
+              ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: widget.testNotificationCallback,
-              child: const Text('Test Notification'),
+            Center(
+              child: ElevatedButton(
+                onPressed: widget.testNotificationCallback,
+                child: const Text('Test Notification'),
+              ),
             ),
           ],
         ),
