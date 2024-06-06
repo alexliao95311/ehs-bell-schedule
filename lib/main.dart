@@ -64,6 +64,8 @@ class _HomePageState extends State<HomePage> {
   String _timeLeft = '';
   String _currentSchedule = '';
   bool notificationSent = false;
+  bool notificationsEnabled = true;
+  int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
     'Period 1': 'Period 1',
@@ -199,7 +201,7 @@ class _HomePageState extends State<HomePage> {
       if (now.isAfter(start) && now.isBefore(end)) {
         currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
-        notificationTime = end.subtract(Duration(minutes: 2));
+        notificationTime = end.subtract(Duration(minutes: notificationTimeBeforeEnd));
         break;
       }
     }
@@ -213,13 +215,13 @@ class _HomePageState extends State<HomePage> {
       _currentSchedule = currentSchedule;
     });
 
-    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+    if (notificationsEnabled && notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
           channelKey: 'basic_channel',
           title: 'EHS Bell Schedule',
-          body: '$_currentClass ends in 2 minutes!',
+          body: '$_currentClass ends in $notificationTimeBeforeEnd minutes!',
         ),
       );
       notificationSent = true;
@@ -277,7 +279,22 @@ class _HomePageState extends State<HomePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => SettingsPage(customClassNames: customClassNames, testNotificationCallback: _testNotification),
+        builder: (context) => SettingsPage(
+          customClassNames: customClassNames,
+          testNotificationCallback: _testNotification,
+          notificationsEnabled: notificationsEnabled,
+          notificationTimeBeforeEnd: notificationTimeBeforeEnd,
+          onNotificationsChanged: (bool value) {
+            setState(() {
+              notificationsEnabled = value;
+            });
+          },
+          onNotificationTimeChanged: (int value) {
+            setState(() {
+              notificationTimeBeforeEnd = value;
+            });
+          },
+        ),
       ),
     ).then((result) {
       if (result != null) {
@@ -364,8 +381,19 @@ class _HomePageState extends State<HomePage> {
 class SettingsPage extends StatelessWidget {
   final Map<String, String> customClassNames;
   final VoidCallback testNotificationCallback;
+  final bool notificationsEnabled;
+  final int notificationTimeBeforeEnd;
+  final ValueChanged<bool> onNotificationsChanged;
+  final ValueChanged<int> onNotificationTimeChanged;
 
-  SettingsPage({required this.customClassNames, required this.testNotificationCallback});
+  SettingsPage({
+    required this.customClassNames,
+    required this.testNotificationCallback,
+    required this.notificationsEnabled,
+    required this.notificationTimeBeforeEnd,
+    required this.onNotificationsChanged,
+    required this.onNotificationTimeChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -401,7 +429,13 @@ class SettingsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NotificationsPage(testNotificationCallback: testNotificationCallback),
+                  builder: (context) => NotificationsPage(
+                    testNotificationCallback: testNotificationCallback,
+                    notificationsEnabled: notificationsEnabled,
+                    notificationTimeBeforeEnd: notificationTimeBeforeEnd,
+                    onNotificationsChanged: onNotificationsChanged,
+                    onNotificationTimeChanged: onNotificationTimeChanged,
+                  ),
                 ),
               );
             },
@@ -444,12 +478,6 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
       for (var period in widget.customClassNames.keys)
         period: TextEditingController(text: widget.customClassNames[period]),
     };
-
-    for (var controller in _controllers.values) {
-      controller.addListener(() {
-        setState(() {}); // Update the state to show/hide the clear button
-      });
-    }
   }
 
   @override
@@ -492,12 +520,17 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
                       ? IconButton(
                           icon: Icon(Icons.clear, color: Colors.white),
                           onPressed: () {
-                            _controllers[period]!.clear();
+                            setState(() {
+                              _controllers[period]!.clear();
+                            });
                           },
                         )
                       : null,
                 ),
                 style: const TextStyle(color: Colors.white),
+                onChanged: (text) {
+                  setState(() {});
+                },
               ),
             );
           }).toList(),
@@ -518,10 +551,35 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
   }
 }
 
-class NotificationsPage extends StatelessWidget {
+class NotificationsPage extends StatefulWidget {
   final VoidCallback testNotificationCallback;
+  final bool notificationsEnabled;
+  final int notificationTimeBeforeEnd;
+  final ValueChanged<bool> onNotificationsChanged;
+  final ValueChanged<int> onNotificationTimeChanged;
 
-  NotificationsPage({required this.testNotificationCallback});
+  NotificationsPage({
+    required this.testNotificationCallback,
+    required this.notificationsEnabled,
+    required this.notificationTimeBeforeEnd,
+    required this.onNotificationsChanged,
+    required this.onNotificationTimeChanged,
+  });
+
+  @override
+  _NotificationsPageState createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  bool _notificationsEnabled = false;
+  int _notificationTimeBeforeEnd = 2; // Default to 2 minutes
+
+  @override
+  void initState() {
+    super.initState();
+    _notificationsEnabled = widget.notificationsEnabled;
+    _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -531,10 +589,84 @@ class NotificationsPage extends StatelessWidget {
         backgroundColor: const Color(0xFF004d00),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: testNotificationCallback,
-          child: const Text('Test Notification'),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SwitchListTile(
+              title: const Text('Enable Notifications', style: TextStyle(color: Colors.white)),
+              value: _notificationsEnabled,
+              onChanged: (bool value) {
+                setState(() {
+                  _notificationsEnabled = value;
+                });
+                widget.onNotificationsChanged(value);
+              },
+            ),
+            const SizedBox(height: 20),
+            const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
+            RadioListTile<int>(
+              title: const Text('30 seconds', style: TextStyle(color: Colors.white)),
+              value: 0,
+              groupValue: _notificationTimeBeforeEnd,
+              onChanged: (int? value) {
+                setState(() {
+                  _notificationTimeBeforeEnd = value!;
+                });
+                widget.onNotificationTimeChanged(value!);
+              },
+            ),
+            RadioListTile<int>(
+              title: const Text('1 minute', style: TextStyle(color: Colors.white)),
+              value: 1,
+              groupValue: _notificationTimeBeforeEnd,
+              onChanged: (int? value) {
+                setState(() {
+                  _notificationTimeBeforeEnd = value!;
+                });
+                widget.onNotificationTimeChanged(value!);
+              },
+            ),
+            RadioListTile<int>(
+              title: const Text('2 minutes', style: TextStyle(color: Colors.white)),
+              value: 2,
+              groupValue: _notificationTimeBeforeEnd,
+              onChanged: (int? value) {
+                setState(() {
+                  _notificationTimeBeforeEnd = value!;
+                });
+                widget.onNotificationTimeChanged(value!);
+              },
+            ),
+            RadioListTile<int>(
+              title: const Text('3 minutes', style: TextStyle(color: Colors.white)),
+              value: 3,
+              groupValue: _notificationTimeBeforeEnd,
+              onChanged: (int? value) {
+                setState(() {
+                  _notificationTimeBeforeEnd = value!;
+                });
+                widget.onNotificationTimeChanged(value!);
+              },
+            ),
+            RadioListTile<int>(
+              title: const Text('5 minutes', style: TextStyle(color: Colors.white)),
+              value: 5,
+              groupValue: _notificationTimeBeforeEnd,
+              onChanged: (int? value) {
+                setState(() {
+                  _notificationTimeBeforeEnd = value!;
+                });
+                widget.onNotificationTimeChanged(value!);
+              },
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: widget.testNotificationCallback,
+              child: const Text('Test Notification'),
+            ),
+          ],
         ),
       ),
     );
