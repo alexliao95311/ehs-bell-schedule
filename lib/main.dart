@@ -67,6 +67,8 @@ class _HomePageState extends State<HomePage> {
   bool notificationSent = false;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
   bool passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
+  bool is24HourFormat = false; // Default to 12-hour format
+  bool hasZeroPeriod = true; // Default to having zero period
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
     'Period 1': 'Period 1',
@@ -111,7 +113,6 @@ class _HomePageState extends State<HomePage> {
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Wednesday': [
-      {'start': '08:00', 'end': '09:00', 'period': 'Staff Collaboration'},
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
       {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
@@ -171,10 +172,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AwesomeNotifications().setListeners(
-      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
+        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
     super.initState();
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
@@ -182,7 +183,7 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    String formattedTime = DateFormat('hh:mm:ss a').format(now);  // Format time to 12-hour format with AM/PM
+    String formattedTime = DateFormat(is24HourFormat ? 'HH:mm:ss' : 'hh:mm:ss a').format(now); // Format time to 12-hour or 24-hour format
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
@@ -193,6 +194,8 @@ class _HomePageState extends State<HomePage> {
     DateTime? notificationTime;
 
     for (var period in schedule) {
+      if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
+
       DateTime start = DateTime(now.year, now.month, now.day,
           int.parse(period['start']!.split(':')[0]),
           int.parse(period['start']!.split(':')[1]));
@@ -203,7 +206,7 @@ class _HomePageState extends State<HomePage> {
       if (now.isAfter(start) && now.isBefore(end)) {
         currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
-        periodDuration = '${DateFormat('hh:mm a').format(start)} - ${DateFormat('hh:mm a').format(end)}';
+        periodDuration = '${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(start)} - ${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(end)}';
 
         if (currentClass == 'Passing Period') {
           if (passPeriodNotificationsEnabled) {
@@ -308,6 +311,18 @@ class _HomePageState extends State<HomePage> {
               passPeriodNotificationsEnabled = value;
             });
           },
+          is24HourFormat: is24HourFormat,
+          hasZeroPeriod: hasZeroPeriod,
+          on24HourFormatChanged: (bool value) {
+            setState(() {
+              is24HourFormat = value;
+            });
+          },
+          onZeroPeriodChanged: (bool value) {
+            setState(() {
+              hasZeroPeriod = value;
+            });
+          },
         ),
       ),
     ).then((result) {
@@ -396,6 +411,10 @@ class SettingsPage extends StatelessWidget {
   final bool passPeriodNotificationsEnabled;
   final ValueChanged<int> onNotificationTimeChanged;
   final ValueChanged<bool> onPassPeriodNotificationsChanged;
+  final bool is24HourFormat;
+  final bool hasZeroPeriod;
+  final ValueChanged<bool> on24HourFormatChanged;
+  final ValueChanged<bool> onZeroPeriodChanged;
 
   SettingsPage({
     required this.customClassNames,
@@ -404,6 +423,10 @@ class SettingsPage extends StatelessWidget {
     required this.passPeriodNotificationsEnabled,
     required this.onNotificationTimeChanged,
     required this.onPassPeriodNotificationsChanged,
+    required this.is24HourFormat,
+    required this.hasZeroPeriod,
+    required this.on24HourFormatChanged,
+    required this.onZeroPeriodChanged,
   });
 
   @override
@@ -414,7 +437,8 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: Column(
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
         children: [
           ListTile(
             title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
@@ -423,7 +447,7 @@ class SettingsPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EditClassNamesPage(customClassNames: customClassNames),
+                  builder: (context) => EditClassNamesPage(customClassNames: customClassNames, hasZeroPeriod: hasZeroPeriod),
                 ),
               ).then((result) {
                 if (result != null) {
@@ -453,6 +477,24 @@ class SettingsPage extends StatelessWidget {
           ),
           const Divider(color: Colors.white, height: 2),
           ListTile(
+            title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => OtherSettingsPage(
+                    is24HourFormat: is24HourFormat,
+                    hasZeroPeriod: hasZeroPeriod,
+                    on24HourFormatChanged: on24HourFormatChanged,
+                    onZeroPeriodChanged: onZeroPeriodChanged,
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(color: Colors.white, height: 2),
+          ListTile(
             title: const Text('About', style: TextStyle(color: Colors.white)),
             trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
             onTap: () {
@@ -472,8 +514,9 @@ class SettingsPage extends StatelessWidget {
 
 class EditClassNamesPage extends StatefulWidget {
   final Map<String, String> customClassNames;
+  final bool hasZeroPeriod;
 
-  EditClassNamesPage({required this.customClassNames});
+  EditClassNamesPage({required this.customClassNames, required this.hasZeroPeriod});
 
   @override
   _EditClassNamesPageState createState() => _EditClassNamesPageState();
@@ -510,13 +553,8 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          const Text(
-            'Edit your class names:',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
           const SizedBox(height: 20),
-          ..._controllers.keys.map((period) {
+          ..._controllers.keys.where((period) => widget.hasZeroPeriod || period != 'Period 0').map((period) {
             return Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: TextField(
@@ -700,6 +738,83 @@ class _NotificationsPageState extends State<NotificationsPage> {
   }
 }
 
+class OtherSettingsPage extends StatefulWidget {
+  final bool is24HourFormat;
+  final bool hasZeroPeriod;
+  final ValueChanged<bool> on24HourFormatChanged;
+  final ValueChanged<bool> onZeroPeriodChanged;
+
+  OtherSettingsPage({
+    required this.is24HourFormat,
+    required this.hasZeroPeriod,
+    required this.on24HourFormatChanged,
+    required this.onZeroPeriodChanged,
+  });
+
+  @override
+  _OtherSettingsPageState createState() => _OtherSettingsPageState();
+}
+
+class _OtherSettingsPageState extends State<OtherSettingsPage> {
+  late bool _is24HourFormat;
+  late bool _hasZeroPeriod;
+
+  @override
+  void initState() {
+    super.initState();
+    _is24HourFormat = widget.is24HourFormat;
+    _hasZeroPeriod = widget.hasZeroPeriod;
+  }
+
+  void _saveSettings() {
+    widget.on24HourFormatChanged(_is24HourFormat);
+    widget.onZeroPeriodChanged(_hasZeroPeriod);
+    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          SwitchListTile(
+            title: const Text('24-Hour Time Format', style: TextStyle(color: Colors.white)),
+            value: _is24HourFormat,
+            onChanged: (bool value) {
+              setState(() {
+                _is24HourFormat = value;
+              });
+            },
+          ),
+          const Divider(color: Colors.white, height: 2),
+          SwitchListTile(
+            title: const Text('Show Zero Period', style: TextStyle(color: Colors.white)),
+            value: _hasZeroPeriod,
+            onChanged: (bool value) {
+              setState(() {
+                _hasZeroPeriod = value;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: _saveSettings,
+              child: const Text('Save Settings'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -712,11 +827,11 @@ class AboutPage extends StatelessWidget {
       body: Center(
         child: Container(
           margin: const EdgeInsets.all(16.0),
-          alignment: Alignment.center,
+          alignment: Alignment.topCenter,
           child: const Text(
             'Developed by Alex Liao\n'
-            'Designed by Sanjana Gowda, Shely Jain, Jan Palma, Jack Wu\n\n'
-            'From the first graduating class of Emerald High, Class of 2027.',
+                'Designed by Sanjana Gowda, Shely Jain, Jan Palma, Jack Wu\n\n'
+                'From the first graduating class of Emerald High, Class of 2027.',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18.0,
