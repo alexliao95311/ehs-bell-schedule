@@ -689,41 +689,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               style: TextStyle(color: Colors.white),
               dropdownColor: Color.fromARGB(255, 33, 59, 34),
             ),
-            const SizedBox(height: 20),
-            const Text('Notify me before passing period ends:', style: TextStyle(color: Colors.white)),
-            DropdownButtonFormField<bool>(
-              value: _passPeriodNotificationsEnabled,
-              items: const [
-                DropdownMenuItem(
-                  child: Text('No Notification'),
-                  value: false,
-                ),
-                DropdownMenuItem(
-                  child: Text('1 minute'),
-                  value: true,
-                ),
-              ],
-              onChanged: (bool? value) {
-                setState(() {
-                  _passPeriodNotificationsEnabled = value!;
-                });
-                widget.onPassPeriodNotificationsChanged(value!);
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 33, 59, 34),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              style: TextStyle(color: Colors.white),
-              dropdownColor: Color.fromARGB(255, 33, 59, 34),
-            ),
+          
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
