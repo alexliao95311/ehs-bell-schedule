@@ -65,8 +65,8 @@ class _HomePageState extends State<HomePage> {
   String _currentSchedule = '';
   String _periodDuration = '';
   bool notificationSent = false;
-  bool notificationsEnabled = true;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
+  bool passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
     'Period 1': 'Period 1',
@@ -132,7 +132,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
       {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
-      {'start': '15:03', 'end': '15:53', 'period': 'Period 1'},
+      {'start': '13:03', 'end': '18:52', 'period': 'Passing Period'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -191,7 +191,6 @@ class _HomePageState extends State<HomePage> {
     String timeLeft = '';
     String periodDuration = '';
     DateTime? notificationTime;
-    
 
     for (var period in schedule) {
       DateTime start = DateTime(now.year, now.month, now.day,
@@ -205,7 +204,14 @@ class _HomePageState extends State<HomePage> {
         currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
         periodDuration = '${DateFormat('hh:mm a').format(start)} - ${DateFormat('hh:mm a').format(end)}';
-        notificationTime = end.subtract(Duration(minutes: notificationTimeBeforeEnd));
+
+        if (currentClass == 'Passing Period') {
+          if (passPeriodNotificationsEnabled) {
+            notificationTime = end.subtract(Duration(minutes: 1));
+          }
+        } else {
+          notificationTime = end.subtract(Duration(minutes: notificationTimeBeforeEnd));
+        }
         break;
       }
     }
@@ -220,13 +226,16 @@ class _HomePageState extends State<HomePage> {
       _periodDuration = periodDuration;
     });
 
-    if (notificationsEnabled && notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
+      String notificationMessage = _currentClass == 'Passing Period'
+          ? '$_currentClass ends in 1 minute!'
+          : '$_currentClass ends in $notificationTimeBeforeEnd minutes!';
       AwesomeNotifications().createNotification(
         content: NotificationContent(
           id: 1,
           channelKey: 'basic_channel',
           title: 'EHS Bell Schedule',
-          body: '$_currentClass ends in $notificationTimeBeforeEnd minutes!',
+          body: notificationMessage,
         ),
       );
       notificationSent = true;
@@ -287,16 +296,16 @@ class _HomePageState extends State<HomePage> {
         builder: (context) => SettingsPage(
           customClassNames: customClassNames,
           testNotificationCallback: _testNotification,
-          notificationsEnabled: notificationsEnabled,
           notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-          onNotificationsChanged: (bool value) {
-            setState(() {
-              notificationsEnabled = value;
-            });
-          },
+          passPeriodNotificationsEnabled: passPeriodNotificationsEnabled,
           onNotificationTimeChanged: (int value) {
             setState(() {
               notificationTimeBeforeEnd = value;
+            });
+          },
+          onPassPeriodNotificationsChanged: (bool value) {
+            setState(() {
+              passPeriodNotificationsEnabled = value;
             });
           },
         ),
@@ -383,18 +392,18 @@ class _HomePageState extends State<HomePage> {
 class SettingsPage extends StatelessWidget {
   final Map<String, String> customClassNames;
   final VoidCallback testNotificationCallback;
-  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
-  final ValueChanged<bool> onNotificationsChanged;
+  final bool passPeriodNotificationsEnabled;
   final ValueChanged<int> onNotificationTimeChanged;
+  final ValueChanged<bool> onPassPeriodNotificationsChanged;
 
   SettingsPage({
     required this.customClassNames,
     required this.testNotificationCallback,
-    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
-    required this.onNotificationsChanged,
+    required this.passPeriodNotificationsEnabled,
     required this.onNotificationTimeChanged,
+    required this.onPassPeriodNotificationsChanged,
   });
 
   @override
@@ -433,10 +442,10 @@ class SettingsPage extends StatelessWidget {
                 MaterialPageRoute(
                   builder: (context) => NotificationsPage(
                     testNotificationCallback: testNotificationCallback,
-                    notificationsEnabled: notificationsEnabled,
                     notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-                    onNotificationsChanged: onNotificationsChanged,
+                    passPeriodNotificationsEnabled: passPeriodNotificationsEnabled,
                     onNotificationTimeChanged: onNotificationTimeChanged,
+                    onPassPeriodNotificationsChanged: onPassPeriodNotificationsChanged,
                   ),
                 ),
               );
@@ -555,17 +564,17 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
 
 class NotificationsPage extends StatefulWidget {
   final VoidCallback testNotificationCallback;
-  final bool notificationsEnabled;
   final int notificationTimeBeforeEnd;
-  final ValueChanged<bool> onNotificationsChanged;
+  final bool passPeriodNotificationsEnabled;
   final ValueChanged<int> onNotificationTimeChanged;
+  final ValueChanged<bool> onPassPeriodNotificationsChanged;
 
   NotificationsPage({
     required this.testNotificationCallback,
-    required this.notificationsEnabled,
     required this.notificationTimeBeforeEnd,
-    required this.onNotificationsChanged,
+    required this.passPeriodNotificationsEnabled,
     required this.onNotificationTimeChanged,
+    required this.onPassPeriodNotificationsChanged,
   });
 
   @override
@@ -573,15 +582,16 @@ class NotificationsPage extends StatefulWidget {
 }
 
 class _NotificationsPageState extends State<NotificationsPage> {
-  bool _notificationsEnabled = false;
   int _notificationTimeBeforeEnd = 2; // Default to 2 minutes
+  bool _passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
 
   @override
   void initState() {
     super.initState();
-    _notificationsEnabled = widget.notificationsEnabled;
     _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
+    _passPeriodNotificationsEnabled = widget.passPeriodNotificationsEnabled;
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -602,10 +612,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 DropdownMenuItem(
                   child: Text('No Notification'),
                   value: -1,
-                ),
-                DropdownMenuItem(
-                  child: Text('30 seconds'),
-                  value: 0,
                 ),
                 DropdownMenuItem(
                   child: Text('1 minute'),
@@ -629,6 +635,41 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   _notificationTimeBeforeEnd = value!;
                 });
                 widget.onNotificationTimeChanged(value!);
+              },
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Color.fromARGB(255, 33, 59, 34),
+                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.white),
+                ),
+                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              ),
+              style: TextStyle(color: Colors.white),
+              dropdownColor: Color.fromARGB(255, 33, 59, 34),
+            ),
+            const SizedBox(height: 20),
+            const Text('Notify me before passing period ends:', style: TextStyle(color: Colors.white)),
+            DropdownButtonFormField<bool>(
+              value: _passPeriodNotificationsEnabled,
+              items: const [
+                DropdownMenuItem(
+                  child: Text('No Notification'),
+                  value: false,
+                ),
+                DropdownMenuItem(
+                  child: Text('1 minute'),
+                  value: true,
+                ),
+              ],
+              onChanged: (bool? value) {
+                setState(() {
+                  _passPeriodNotificationsEnabled = value!;
+                });
+                widget.onPassPeriodNotificationsChanged(value!);
               },
               decoration: InputDecoration(
                 filled: true,
@@ -687,4 +728,3 @@ class AboutPage extends StatelessWidget {
     );
   }
 }
-
