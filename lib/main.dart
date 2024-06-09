@@ -41,7 +41,7 @@ class BellScheduleApp extends StatelessWidget {
       title: 'EHS Bell Schedule',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Color.fromARGB(255, 2, 51, 2),
+        scaffoldBackgroundColor: Color.fromARGB(255, 0, 42, 0),
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
         ),
@@ -82,54 +82,89 @@ class _HomePageState extends State<HomePage> {
   final Map<String, List<Map<String, String>>> schedules = {
     'Monday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
+      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Tuesday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
+      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Wednesday': [
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
+      {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
+      {'start': '12:06', 'end': '12:42', 'period': 'Lunch'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
+      {'start': '13:37', 'end': '13:43', 'period': 'Passing Period'},
       {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '10:00', 'period': 'Period 2'},
+      {'start': '10:00', 'end': '10:06', 'period': 'Passing Period'},
       {'start': '10:06', 'end': '11:36', 'period': 'Period 4'},
+      {'start': '11:36', 'end': '12:12', 'period': 'Lunch'},
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
+      {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
+      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
+      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
+      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
+      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
+      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Minimum Day': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
+      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:05', 'period': 'Period 1'},
+      {'start': '09:05', 'end': '09:11', 'period': 'Passing Period'},
       {'start': '09:11', 'end': '09:46', 'period': 'Period 2'},
+      {'start': '09:46', 'end': '09:52', 'period': 'Passing Period'},
       {'start': '09:52', 'end': '10:27', 'period': 'Period 3'},
+      {'start': '10:27', 'end': '10:33', 'period': 'Passing Period'},
       {'start': '10:33', 'end': '11:08', 'period': 'Period 4'},
+      {'start': '11:08', 'end': '11:24', 'period': 'Passing Period'},
       {'start': '11:24', 'end': '11:59', 'period': 'Period 5'},
+      {'start': '11:59', 'end': '12:05', 'period': 'Passing Period'},
       {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
+    ],
+    'Saturday': [
+      {'start': '21:30', 'end':'22:48', 'period':'Period 0'}
     ]
   };
+
 
   @override
   void initState() {
@@ -248,7 +283,7 @@ class _HomePageState extends State<HomePage> {
       case 'Minimum Day':
         return 'Minimum Day Schedule';
       default:
-        return 'No schedule';
+        return 'Test schedule';
     }
   }
 
@@ -322,7 +357,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         leading: IconButton(
           icon: const Icon(Icons.info, color: Colors.white),
           onPressed: _openInformation,
@@ -363,14 +398,14 @@ class _HomePageState extends State<HomePage> {
             if (_currentClass != 'No Class')
               Text(
                 _periodDuration,
-                style: const TextStyle(fontSize: 26, color: Colors.white),
+                style: const TextStyle(fontSize: 24, color: Colors.white),
               ),
             const SizedBox(height: 20),
-            if (_currentClass != 'No Class')
-              const Text(
-                'Time Left:',
-                style: TextStyle(fontSize: 20, color: Colors.white),
-              ),
+            //if (_currentClass != 'No Class')
+              //const Text(
+                //'Time Left:',
+                //style: TextStyle(fontSize: 20, color: Colors.white),
+              //),
             if (_currentClass != 'No Class')
               Text(
                 _timeLeft,
@@ -413,7 +448,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
@@ -526,7 +561,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
@@ -614,7 +649,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Padding(
@@ -722,7 +757,7 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
@@ -766,7 +801,7 @@ class AboutPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Center(
@@ -804,7 +839,9 @@ class InformationPage extends StatelessWidget {
   InformationPage({required this.schedules, required this.is24HourFormat, required this.hasZeroPeriod});
 
   List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
-    return schedule.where((period) => hasZeroPeriod || period['period'] != 'Period 0').toList();
+    return schedule
+        .where((period) => period['period'] != 'Passing Period' && (hasZeroPeriod || period['period'] != 'Period 0'))
+        .toList();
   }
 
   String _formatTime(String time) {
@@ -820,7 +857,7 @@ class InformationPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('All Schedules', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: ListView(
@@ -849,11 +886,25 @@ class InformationPage extends StatelessWidget {
         const SizedBox(height: 10),
         if (filteredSchedule.isEmpty)
           const Text('No schedule today', style: TextStyle(fontSize: 16, color: Colors.white)),
-        ...filteredSchedule.map((period) {
-          return Text(
-            '${period['period']}: ${_formatTime(period['start']!)} - ${_formatTime(period['end']!)}',
-            style: const TextStyle(fontSize: 16, color: Colors.white),
-          );
+        ...filteredSchedule.asMap().entries.expand((entry) {
+          int index = entry.key;
+          Map<String, String> period = entry.value;
+          return [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  period['period']!,
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+                Text(
+                  '${_formatTime(period['start']!)} - ${_formatTime(period['end']!)}',
+                  style: const TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ],
+            ),
+            if (index < filteredSchedule.length - 1) Divider(color: Colors.grey[400]),
+          ];
         }).toList(),
         const SizedBox(height: 20),
       ],

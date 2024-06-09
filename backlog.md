@@ -9,5 +9,4 @@
 
 
 **Urgent To Fix**
-- fix + test passing period notification settings
 - test zero period settings???
