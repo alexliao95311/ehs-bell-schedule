@@ -770,18 +770,25 @@ class AboutPage extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
       body: Center(
-        child: Container(
-          margin: const EdgeInsets.all(16.0),
-          alignment: Alignment.topCenter,
-          child: const Text(
-            'Developed by Alex Liao\n'
-                'Designed by Sanjana Gowda, Shely Jain, Jan Palma, Jack Wu\n\n'
-                'From the first graduating class of Emerald High, Class of 2027.',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18.0,
-            ),
-            textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Spacer(flex: 2),
+              Text(
+                'Developed by Alex Liao and Arnav Kakani\n\n'
+                'Designed by: \nSanjana Gowda\nShely Jain\nJan Palma\nJack Wu\n\n'
+                'From the first graduating class of Emerald High, Class of 2027.\n\n'
+                'Version 1.0.0, released June 2024',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18.0,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              Spacer(flex: 3),
+            ],
           ),
         ),
       ),
@@ -812,7 +819,7 @@ class InformationPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Information', style: TextStyle(color: Colors.white)),
+        title: const Text('All Schedules', style: TextStyle(color: Colors.white)),
         backgroundColor: Color.fromARGB(255, 2, 51, 2),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
