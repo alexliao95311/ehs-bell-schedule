@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'notification_controller.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await AwesomeNotifications().initialize(
     null,
     [
@@ -27,7 +28,7 @@ void main() async {
 
   bool isAllowedToSendNotification = await AwesomeNotifications().isNotificationAllowed();
   if (!isAllowedToSendNotification) {
-    AwesomeNotifications().requestPermissionToSendNotifications();
+    await AwesomeNotifications().requestPermissionToSendNotifications();
   }
   runApp(const BellScheduleApp());
 }
@@ -41,7 +42,7 @@ class BellScheduleApp extends StatelessWidget {
       title: 'EHS Bell Schedule',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        scaffoldBackgroundColor: Color.fromARGB(255, 0, 42, 0),
+        scaffoldBackgroundColor: Colors.transparent,
         textTheme: const TextTheme(
           bodyMedium: TextStyle(color: Colors.white),
         ),
@@ -162,7 +163,6 @@ class _HomePageState extends State<HomePage> {
     ],
   };
 
-
   @override
   void initState() {
     AwesomeNotifications().setListeners(
@@ -280,7 +280,7 @@ class _HomePageState extends State<HomePage> {
       case 'Minimum Day':
         return 'Minimum Day Schedule';
       default:
-        return 'No schedule'; // Default = "No schedule"
+        return 'Testing schedule'; // Default = "No schedule"
     }
   }
 
@@ -353,8 +353,10 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.info, color: Colors.white),
           onPressed: _openInformation,
@@ -380,56 +382,63 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Spacer(flex: 2),
-            if (_currentClass != 'No Class')
-              SizedBox(
-                height: 200,
-                width: 200,
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CircularProgressIndicator(
-                      value: 1 - _calculateProgress(), // Countdown counterclockwise
-                      strokeWidth: 10,
-                      backgroundColor: Colors.grey,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            _timeLeft,
-                            style: const TextStyle(fontSize: 36, color: Colors.white),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                if (_currentClass != 'No Class')
+                  SizedBox(
+                    height: 200,
+                    width: 200,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        CircularProgressIndicator(
+                          value: 1 - _calculateProgress(), // Countdown counterclockwise
+                          strokeWidth: 10,
+                          backgroundColor: Colors.grey,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                        Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                _timeLeft,
+                                style: const TextStyle(fontSize: 24, color: Colors.white),
+                              ),
+                              const Text(
+                                'left',
+                                style: TextStyle(fontSize: 16, color: Colors.white),
+                              ),
+                            ],
                           ),
-                          const Text(
-                            'left',
-                            style: TextStyle(fontSize: 24, color: Colors.white),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    
-                  ],
+                  ),
+                const SizedBox(height: 20),
+                Text(
+                  _currentClass,
+                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-              ),
-            const SizedBox(height: 30),
-            Text(
-              _currentClass,
-              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+                const SizedBox(height: 10),
+                if (_currentClass != 'No Class')
+                  Text(
+                    _periodDuration,
+                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+              ],
             ),
-            const SizedBox(height: 10),
-            if (_currentClass != 'No Class')
-              Text(
-                _periodDuration,
-                style: const TextStyle(fontSize: 24, color: Colors.white),
-              ),
-            Spacer(flex: 3),
-          ],
+          ),
         ),
       ),
     );
@@ -488,81 +497,93 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          ListTile(
-            title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => EditClassNamesPage(customClassNames: customClassNames, hasZeroPeriod: hasZeroPeriod),
-                ),
-              ).then((result) {
-                if (result != null) {
-                  Navigator.pop(context, result);
-                }
-              });
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
           ),
-          const Divider(color: Colors.white, height: 2),
-          ListTile(
-            title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => NotificationsPage(
-                    testNotificationCallback: testNotificationCallback,
-                    notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-                    passPeriodNotificationsEnabled: passPeriodNotificationsEnabled,
-                    onNotificationTimeChanged: onNotificationTimeChanged,
-                    onPassPeriodNotificationsChanged: onPassPeriodNotificationsChanged,
-                  ),
-                ),
-              );
-            },
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              ListTile(
+                title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditClassNamesPage(customClassNames: customClassNames, hasZeroPeriod: hasZeroPeriod),
+                    ),
+                  ).then((result) {
+                    if (result != null) {
+                      Navigator.pop(context, result);
+                    }
+                  });
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
+              ListTile(
+                title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsPage(
+                        testNotificationCallback: testNotificationCallback,
+                        notificationTimeBeforeEnd: notificationTimeBeforeEnd,
+                        passPeriodNotificationsEnabled: passPeriodNotificationsEnabled,
+                        onNotificationTimeChanged: onNotificationTimeChanged,
+                        onPassPeriodNotificationsChanged: onPassPeriodNotificationsChanged,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
+              ListTile(
+                title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OtherSettingsPage(
+                        is24HourFormat: is24HourFormat,
+                        hasZeroPeriod: hasZeroPeriod,
+                        on24HourFormatChanged: on24HourFormatChanged,
+                        onZeroPeriodChanged: onZeroPeriodChanged,
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
+              ListTile(
+                title: const Text('About', style: TextStyle(color: Colors.white)),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AboutPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-          const Divider(color: Colors.white, height: 2),
-          ListTile(
-            title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OtherSettingsPage(
-                    is24HourFormat: is24HourFormat,
-                    hasZeroPeriod: hasZeroPeriod,
-                    on24HourFormatChanged: on24HourFormatChanged,
-                    onZeroPeriodChanged: onZeroPeriodChanged,
-                  ),
-                ),
-              );
-            },
-          ),
-          const Divider(color: Colors.white, height: 2),
-          ListTile(
-            title: const Text('About', style: TextStyle(color: Colors.white)),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AboutPage(),
-                ),
-              );
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -601,56 +622,68 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          const SizedBox(height: 20),
-          ..._controllers.keys.where((period) => widget.hasZeroPeriod || period != 'Period 0').map((period) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: TextField(
-                controller: _controllers[period],
-                decoration: InputDecoration(
-                  labelText: period,
-                  labelStyle: const TextStyle(color: Colors.white),
-                  filled: true,
-                  fillColor: Color.fromARGB(255, 39, 59, 40).withOpacity(0.3),
-                  border: OutlineInputBorder(),
-                  suffixIcon: _controllers[period]!.text.isNotEmpty
-                      ? IconButton(
-                          icon: Icon(Icons.clear, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              _controllers[period]!.clear();
-                            });
-                          },
-                        )
-                      : null,
-                ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: (text) {
-                  setState(() {});
-                },
-              ),
-            );
-          }).toList(),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Map<String, String> updatedNames = {
-                for (var period in _controllers.keys)
-                  period: _controllers[period]!.text,
-              };
-              Navigator.pop(context, updatedNames);
-            },
-            child: const Text('Save Class Names'),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
           ),
-        ],
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              const SizedBox(height: 20),
+              ..._controllers.keys.where((period) => widget.hasZeroPeriod || period != 'Period 0').map((period) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: TextField(
+                    controller: _controllers[period],
+                    decoration: InputDecoration(
+                      labelText: period,
+                      labelStyle: const TextStyle(color: Colors.white),
+                      filled: true,
+                      fillColor: Color.fromARGB(255, 39, 59, 40).withOpacity(0.3),
+                      border: OutlineInputBorder(),
+                      suffixIcon: _controllers[period]!.text.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: Colors.white),
+                              onPressed: () {
+                                setState(() {
+                                  _controllers[period]!.clear();
+                                });
+                              },
+                            )
+                          : null,
+                    ),
+                    style: const TextStyle(color: Colors.white),
+                    onChanged: (text) {
+                      setState(() {});
+                    },
+                  ),
+                );
+              }).toList(),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Map<String, String> updatedNames = {
+                    for (var period in _controllers.keys)
+                      period: _controllers[period]!.text,
+                  };
+                  Navigator.pop(context, updatedNames);
+                },
+                child: const Text('Save Class Names'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -689,71 +722,82 @@ class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
-            DropdownButtonFormField<int>(
-              value: _notificationTimeBeforeEnd,
-              items: const [
-                DropdownMenuItem(
-                  child: Text('No Notification'),
-                  value: -1,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
+                DropdownButtonFormField<int>(
+                  value: _notificationTimeBeforeEnd,
+                  items: const [
+                    DropdownMenuItem(
+                      child: Text('No Notification'),
+                      value: -1,
+                    ),
+                    DropdownMenuItem(
+                      child: Text('1 minute'),
+                      value: 1,
+                    ),
+                    DropdownMenuItem(
+                      child: Text('2 minutes'),
+                      value: 2,
+                    ),
+                    DropdownMenuItem(
+                      child: Text('3 minutes'),
+                      value: 3,
+                    ),
+                    DropdownMenuItem(
+                      child: Text('5 minutes'),
+                      value: 5,
+                    ),
+                  ],
+                  onChanged: (int? value) {
+                    setState(() {
+                      _notificationTimeBeforeEnd = value!;
+                    });
+                    widget.onNotificationTimeChanged(value!);
+                  },
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: Color.fromARGB(255, 33, 59, 34).withOpacity(0.3),
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white),
+                    ),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  ),
+                  style: TextStyle(color: Colors.white),
+                  dropdownColor: Color.fromARGB(255, 33, 59, 34),
                 ),
-                DropdownMenuItem(
-                  child: Text('1 minute'),
-                  value: 1,
-                ),
-                DropdownMenuItem(
-                  child: Text('2 minutes'),
-                  value: 2,
-                ),
-                DropdownMenuItem(
-                  child: Text('3 minutes'),
-                  value: 3,
-                ),
-                DropdownMenuItem(
-                  child: Text('5 minutes'),
-                  value: 5,
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: widget.testNotificationCallback,
+                    child: const Text('Test Notification'),
+                  ),
                 ),
               ],
-              onChanged: (int? value) {
-                setState(() {
-                  _notificationTimeBeforeEnd = value!;
-                });
-                widget.onNotificationTimeChanged(value!);
-              },
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color.fromARGB(255, 33, 59, 34),
-                border: OutlineInputBorder(),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.white),
-                ),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              ),
-              style: TextStyle(color: Colors.white),
-              dropdownColor: Color.fromARGB(255, 33, 59, 34),
             ),
-          
-            const SizedBox(height: 20),
-            Center(
-              child: ElevatedButton(
-                onPressed: widget.testNotificationCallback,
-                child: const Text('Test Notification'),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -797,41 +841,53 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          SwitchListTile(
-            title: const Text('24-Hour Time Format', style: TextStyle(color: Colors.white)),
-            value: _is24HourFormat,
-            onChanged: (bool value) {
-              setState(() {
-                _is24HourFormat = value;
-              });
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
           ),
-          const Divider(color: Colors.white, height: 2),
-          SwitchListTile(
-            title: const Text('Show Zero Period', style: TextStyle(color: Colors.white)),
-            value: _hasZeroPeriod,
-            onChanged: (bool value) {
-              setState(() {
-                _hasZeroPeriod = value;
-              });
-            },
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              SwitchListTile(
+                title: const Text('24-Hour Time Format', style: TextStyle(color: Colors.white)),
+                value: _is24HourFormat,
+                onChanged: (bool value) {
+                  setState(() {
+                    _is24HourFormat = value;
+                  });
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
+              SwitchListTile(
+                title: const Text('Show Zero Period', style: TextStyle(color: Colors.white)),
+                value: _hasZeroPeriod,
+                onChanged: (bool value) {
+                  setState(() {
+                    _hasZeroPeriod = value;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _saveSettings,
+                  child: const Text('Save Settings'),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          Center(
-            child: ElevatedButton(
-              onPressed: _saveSettings,
-              child: const Text('Save Settings'),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -841,31 +897,43 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('About', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Spacer(flex: 2),
-              Text(
-                'Developed by Alex Liao and Arnav Kakani\n\n'
-                'Designed by: \nSanjana Gowda\nShely Jain\nJan Palma\nJack Wu\n\n'
-                'From the first graduating class of Emerald High, Class of 2027.\n\n'
-                'Version 1.0.0, released June 2024',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18.0,
-                ),
-                textAlign: TextAlign.center,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Spacer(flex: 2),
+                  Text(
+                    'Developed by Alex Liao and Arnav Kakani\n\n'
+                    'Designed by: \nSanjana Gowda\nShely Jain\nJan Palma\nJack Wu\n\n'
+                    'From the first graduating class of Emerald High, Class of 2027.\n\n'
+                    'Version 1.0.0, released June 2024',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  Spacer(flex: 3),
+                ],
               ),
-              Spacer(flex: 3),
-            ],
+            ),
           ),
         ),
       ),
@@ -897,20 +965,32 @@ class InformationPage extends StatelessWidget {
     String day = DateFormat('EEEE').format(now);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: const Text('All Schedules', style: TextStyle(color: Colors.white)),
-        backgroundColor: Color.fromARGB(255, 0, 42, 0),
         iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          _buildScheduleSection('Today\'s Schedule (${day})', schedules[day] ?? []),
-          _buildScheduleSection('Mon/Tue/Fri Schedule', schedules['Monday'] ?? []),
-          _buildScheduleSection('Wednesday Schedule', schedules['Wednesday'] ?? []),
-          _buildScheduleSection('Thursday Schedule', schedules['Thursday'] ?? []),
-          _buildScheduleSection('Minimum Day Schedule', schedules['Minimum Day'] ?? []),
-        ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/background2.jpeg'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              _buildScheduleSection('Today\'s Schedule (${day})', schedules[day] ?? []),
+              _buildScheduleSection('Mon/Tue/Fri Schedule', schedules['Monday'] ?? []),
+              _buildScheduleSection('Wednesday Schedule', schedules['Wednesday'] ?? []),
+              _buildScheduleSection('Thursday Schedule', schedules['Thursday'] ?? []),
+              _buildScheduleSection('Minimum Day Schedule', schedules['Minimum Day'] ?? []),
+            ],
+          ),
+        ),
       ),
     );
   }
