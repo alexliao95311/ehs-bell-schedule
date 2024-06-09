@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> {
       {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
     ],
     'Saturday': [
-      {'start': '21:30', 'end':'22:48', 'period':'Period 0'}
+      {'start': '21:30', 'end':'23:48', 'period':'Period 0'}
     ]
   };
 
@@ -362,10 +362,18 @@ class _HomePageState extends State<HomePage> {
           icon: const Icon(Icons.info, color: Colors.white),
           onPressed: _openInformation,
         ),
-        title: const Center(
-          child: Text(
-            'EHS Bell Schedule',
-            style: TextStyle(color: Colors.white),
+        title: Center(
+          child: Column(
+            children: [
+              Text(
+                DateFormat('E, MMM d').format(DateTime.now()),
+                style: const TextStyle(color: Colors.white, fontSize: 18),
+              ),
+              Text(
+                _currentSchedule,
+                style: const TextStyle(color: Colors.white, fontSize: 16),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -377,19 +385,42 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const SizedBox(height: 150),
-            if (_currentSchedule != 'No schedule')
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  _currentSchedule,
-                  style: const TextStyle(fontSize: 24, color: Colors.white),
+            Spacer(flex: 2),
+            if (_currentClass != 'No Class')
+              SizedBox(
+                height: 200,
+                width: 200,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    CircularProgressIndicator(
+                      value: 1 - _calculateProgress(), // Countdown counterclockwise
+                      strokeWidth: 10,
+                      backgroundColor: Colors.grey,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _timeLeft,
+                            style: const TextStyle(fontSize: 36, color: Colors.white),
+                          ),
+                          const Text(
+                            'left',
+                            style: TextStyle(fontSize: 24, color: Colors.white),
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                  ],
                 ),
               ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 30),
             Text(
               _currentClass,
               style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
@@ -400,21 +431,35 @@ class _HomePageState extends State<HomePage> {
                 _periodDuration,
                 style: const TextStyle(fontSize: 24, color: Colors.white),
               ),
-            const SizedBox(height: 20),
-            //if (_currentClass != 'No Class')
-              //const Text(
-                //'Time Left:',
-                //style: TextStyle(fontSize: 20, color: Colors.white),
-              //),
-            if (_currentClass != 'No Class')
-              Text(
-                _timeLeft,
-                style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
-              ),
+            Spacer(flex: 3),
           ],
         ),
       ),
     );
+  }
+
+  double _calculateProgress() {
+    DateTime now = DateTime.now();
+    String day = _getDayOfWeek(now);
+    List<Map<String, String>> schedule = schedules[day] ?? [];
+
+    for (var period in schedule) {
+      if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
+
+      DateTime start = DateTime(now.year, now.month, now.day,
+          int.parse(period['start']!.split(':')[0]),
+          int.parse(period['start']!.split(':')[1]));
+      DateTime end = DateTime(now.year, now.month, now.day,
+          int.parse(period['end']!.split(':')[0]),
+          int.parse(period['end']!.split(':')[1]));
+
+      if (now.isAfter(start) && now.isBefore(end)) {
+        double totalDuration = end.difference(start).inSeconds.toDouble();
+        double elapsedDuration = now.difference(start).inSeconds.toDouble();
+        return elapsedDuration / totalDuration;
+      }
+    }
+    return 0.0;
   }
 }
 
