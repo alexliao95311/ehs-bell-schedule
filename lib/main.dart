@@ -160,9 +160,6 @@ class _HomePageState extends State<HomePage> {
       {'start': '11:59', 'end': '12:05', 'period': 'Passing Period'},
       {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
     ],
-    'Saturday': [
-      {'start': '21:30', 'end':'23:48', 'period':'Period 0'}
-    ]
   };
 
 
@@ -283,7 +280,7 @@ class _HomePageState extends State<HomePage> {
       case 'Minimum Day':
         return 'Minimum Day Schedule';
       default:
-        return 'Test schedule';
+        return 'No schedule'; // Default = "No schedule"
     }
   }
 
