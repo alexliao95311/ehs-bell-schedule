@@ -1,35 +1,14 @@
-Add a logo
+How to sideload with sideloadly:
 
-Add flutter_launcher_icons Plugin to pubspec.yaml
 
-e.g.
+If you have a Provisioning Profile in Xcode then below method will 100% work as it works for me :
 
-dev_dependencies: 
-  flutter_test:
-    sdk: flutter
+Step:1 Create Archive
 
-  flutter_launcher_icons: "^0.9.0"
+Step:2 Right-Click on the Archive and Click Show in Finder.
 
-flutter_icons:
-  image_path: "icon/icon.png" 
-  android: true
-  ios: true
-  # optionally, as transparency is not allowed on app store
-  # remove_alpha_ios: true
-2. Prepare an app icon for the specified path. e.g. icon/icon.png
+Step:3 You can see .xcarchive file in Finder.
 
-3. Execute command on the terminal to Create app icons:
+Step:4 Right CLick on the .xcarchive file and click Show package content and go to the Products -> Applications folder. Create a new folder named Payload and drag the .app file into that folder.
 
-$ flutter pub get
-
-$ flutter pub run flutter_launcher_icons:main
-
-To check check all available options and to set different icons for android and iOS please refer this
-
-Update:
-
-flutter_launcher_icons 0.8.0 Version (12th Sept 2020) has Added flavours support
-
-Flavors are typically used to build your app for different environments such as dev and prod
-
-The community has written some articles and packages you might find useful. These articles address flavors for both iOS and Android.
+Step:5 Compress [Create Zip File] the Payload folder and rename it to whatever you want and change the extention to .ipa.

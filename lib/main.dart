@@ -82,89 +82,51 @@ class _HomePageState extends State<HomePage> {
   final Map<String, List<Map<String, String>>> schedules = {
     'Monday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
-      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Tuesday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
-      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Wednesday': [
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
-      {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
-      {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
-      {'start': '12:36', 'end': '12:42', 'period': 'Passing Period'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
-      {'start': '13:37', 'end': '13:43', 'period': 'Passing Period'},
       {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
-      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '10:00', 'period': 'Period 2'},
-      {'start': '10:00', 'end': '10:06', 'period': 'Passing Period'},
       {'start': '10:06', 'end': '11:36', 'period': 'Period 4'},
-      {'start': '11:36', 'end': '12:06', 'period': 'Lunch'},
-      {'start': '12:06', 'end': '12:12', 'period': 'Passing Period'},
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
-      {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
-      {'start': '13:03', 'end': '18:52', 'period': 'Passing Period'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
-      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
       {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
     ],
     'Minimum Day': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
-      {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
       {'start': '08:30', 'end': '09:05', 'period': 'Period 1'},
-      {'start': '09:05', 'end': '09:11', 'period': 'Passing Period'},
       {'start': '09:11', 'end': '09:46', 'period': 'Period 2'},
-      {'start': '09:46', 'end': '09:52', 'period': 'Passing Period'},
       {'start': '09:52', 'end': '10:27', 'period': 'Period 3'},
-      {'start': '10:27', 'end': '10:33', 'period': 'Passing Period'},
       {'start': '10:33', 'end': '11:08', 'period': 'Period 4'},
-      {'start': '11:08', 'end': '11:18', 'period': 'Brunch'},
-      {'start': '11:18', 'end': '11:24', 'period': 'Passing Period'},
       {'start': '11:24', 'end': '11:59', 'period': 'Period 5'},
-      {'start': '11:59', 'end': '12:05', 'period': 'Passing Period'},
       {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
     ]
   };
@@ -276,17 +238,15 @@ class _HomePageState extends State<HomePage> {
   String _getScheduleName(String day) {
     switch (day) {
       case 'Monday':
-        return 'Mon/Tue/Fri Schedule';
       case 'Tuesday':
-        return 'Mon/Tue/Fri Schedule';
       case 'Friday':
         return 'Mon/Tue/Fri Schedule';
-      case 'Minimum Day':
-        return "Minimum Day Schedule";
       case 'Wednesday':
-        return 'Odd Block Schedule';
+        return 'Wednesday Schedule';
       case 'Thursday':
-        return 'Even Block Schedule';
+        return 'Thursday Schedule';
+      case 'Minimum Day':
+        return 'Minimum Day Schedule';
       default:
         return 'No schedule';
     }
@@ -334,6 +294,18 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _openInformation() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => InformationPage(
+          schedules: schedules,
+          hasZeroPeriod: hasZeroPeriod,
+        ),
+      ),
+    );
+  }
+
   void _testNotification() {
     AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -349,11 +321,21 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'EHS Bell Schedule',
-          style: TextStyle(color: Colors.white),
-        ),
         backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        leading: IconButton(
+          icon: const Icon(Icons.info, color: Colors.white),
+          onPressed: _openInformation,
+        ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'EHS Bell Schedule',
+              style: TextStyle(color: Colors.white),
+            ),
+            const SizedBox(width: 48), // Adjust this width to center the title
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.white),
@@ -806,6 +788,65 @@ class AboutPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class InformationPage extends StatelessWidget {
+  final Map<String, List<Map<String, String>>> schedules;
+  final bool hasZeroPeriod;
+
+  InformationPage({required this.schedules, required this.hasZeroPeriod});
+
+  List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
+    return schedule.where((period) => hasZeroPeriod || period['period'] != 'Period 0').toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String day = DateFormat('EEEE').format(now);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Information', style: TextStyle(color: Colors.white)),
+        backgroundColor: Color.fromARGB(255, 2, 51, 2),
+        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          _buildScheduleSection('Today\'s Schedule (${day})', schedules[day] ?? []),
+          _buildScheduleSection('Mon/Tue/Fri Schedule', schedules['Monday'] ?? []),
+          _buildScheduleSection('Wednesday Schedule', schedules['Wednesday'] ?? []),
+          _buildScheduleSection('Thursday Schedule', schedules['Thursday'] ?? []),
+          _buildScheduleSection('Minimum Day Schedule', schedules['Minimum Day'] ?? []),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildScheduleSection(String title, List<Map<String, String>> schedule) {
+    List<Map<String, String>> filteredSchedule = _filterSchedule(schedule);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        const SizedBox(height: 10),
+        if (filteredSchedule.isEmpty)
+          const Text('No schedule today', style: TextStyle(fontSize: 16, color: Colors.white)),
+        ...filteredSchedule.map((period) {
+          return Text(
+            '${period['period']}: ${period['start']} - ${period['end']}',
+            style: const TextStyle(fontSize: 16, color: Colors.white),
+          );
+        }).toList(),
+        const SizedBox(height: 20),
+      ],
     );
   }
 }
