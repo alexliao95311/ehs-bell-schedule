@@ -300,6 +300,7 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder: (context) => InformationPage(
           schedules: schedules,
+          is24HourFormat: is24HourFormat,
           hasZeroPeriod: hasZeroPeriod,
         ),
       ),
@@ -326,15 +327,11 @@ class _HomePageState extends State<HomePage> {
           icon: const Icon(Icons.info, color: Colors.white),
           onPressed: _openInformation,
         ),
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'EHS Bell Schedule',
-              style: TextStyle(color: Colors.white),
-            ),
-            const SizedBox(width: 48), // Adjust this width to center the title
-          ],
+        title: const Center(
+          child: Text(
+            'EHS Bell Schedule',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
         actions: [
           IconButton(
@@ -794,12 +791,18 @@ class AboutPage extends StatelessWidget {
 
 class InformationPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> schedules;
+  final bool is24HourFormat;
   final bool hasZeroPeriod;
 
-  InformationPage({required this.schedules, required this.hasZeroPeriod});
+  InformationPage({required this.schedules, required this.is24HourFormat, required this.hasZeroPeriod});
 
   List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
     return schedule.where((period) => hasZeroPeriod || period['period'] != 'Period 0').toList();
+  }
+
+  String _formatTime(String time) {
+    DateTime dateTime = DateFormat('HH:mm').parse(time);
+    return DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(dateTime);
   }
 
   @override
@@ -841,7 +844,7 @@ class InformationPage extends StatelessWidget {
           const Text('No schedule today', style: TextStyle(fontSize: 16, color: Colors.white)),
         ...filteredSchedule.map((period) {
           return Text(
-            '${period['period']}: ${period['start']} - ${period['end']}',
+            '${period['period']}: ${_formatTime(period['start']!)} - ${_formatTime(period['end']!)}',
             style: const TextStyle(fontSize: 16, color: Colors.white),
           );
         }).toList(),
