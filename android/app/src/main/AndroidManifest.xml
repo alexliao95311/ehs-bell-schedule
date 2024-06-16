@@ -5,6 +5,11 @@
         android:label="ehs_bell_schedule"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <service
+            android:name="com.example.your_app.YourBackgroundService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:foregroundServiceType="location|dataSync">
+        </service>
         <activity
             android:name=".MainActivity"
             android:exported="true"

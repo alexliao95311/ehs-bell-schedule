@@ -91,7 +91,8 @@ class _HomePageState extends State<HomePage> {
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
       {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
+      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
       {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
@@ -106,7 +107,8 @@ class _HomePageState extends State<HomePage> {
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
       {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
+      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
       {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
@@ -115,7 +117,8 @@ class _HomePageState extends State<HomePage> {
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
       {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
-      {'start': '12:06', 'end': '12:42', 'period': 'Lunch'},
+      {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
+      {'start': '12:36', 'end': '12:42', 'period': 'Passing Period'},
       {'start': '12:42', 'end': '13:37', 'period': 'Access'},
       {'start': '13:37', 'end': '13:43', 'period': 'Passing Period'},
       {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
@@ -126,7 +129,8 @@ class _HomePageState extends State<HomePage> {
       {'start': '08:30', 'end': '10:00', 'period': 'Period 2'},
       {'start': '10:00', 'end': '10:06', 'period': 'Passing Period'},
       {'start': '10:06', 'end': '11:36', 'period': 'Period 4'},
-      {'start': '11:36', 'end': '12:12', 'period': 'Lunch'},
+      {'start': '11:36', 'end': '12:06', 'period': 'Lunch'},
+      {'start': '12:06', 'end': '12:12', 'period': 'Passing Period'},
       {'start': '12:12', 'end': '12:57', 'period': 'Access'},
       {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
       {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
@@ -141,7 +145,8 @@ class _HomePageState extends State<HomePage> {
       {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
       {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
       {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:20', 'period': 'Lunch'},
+      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
+      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
       {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
       {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
       {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
@@ -156,10 +161,10 @@ class _HomePageState extends State<HomePage> {
       {'start': '09:52', 'end': '10:27', 'period': 'Period 3'},
       {'start': '10:27', 'end': '10:33', 'period': 'Passing Period'},
       {'start': '10:33', 'end': '11:08', 'period': 'Period 4'},
-      {'start': '11:08', 'end': '11:24', 'period': 'Passing Period'},
-      {'start': '11:24', 'end': '11:59', 'period': 'Period 5'},
-      {'start': '11:59', 'end': '12:05', 'period': 'Passing Period'},
-      {'start': '12:05', 'end': '12:40', 'period': 'Period 6'},
+      {'start': '11:08', 'end': '11:14', 'period': 'Passing Period'},
+      {'start': '11:14', 'end': '11:49', 'period': 'Period 5'},
+      {'start': '11:49', 'end': '11:55', 'period': 'Passing Period'},
+      {'start': '11:55', 'end': '12:30', 'period': 'Period 6'},
     ],
   };
 
@@ -223,20 +228,29 @@ class _HomePageState extends State<HomePage> {
       _periodDuration = periodDuration;
     });
 
-    if (notificationTime != null && now.isAfter(notificationTime) && !notificationSent) {
-      String notificationMessage = _currentClass == 'Passing Period'
-          ? '$_currentClass ends in 1 minute!'
-          : '$_currentClass ends in $notificationTimeBeforeEnd minutes!';
-      AwesomeNotifications().createNotification(
-        content: NotificationContent(
-          id: 1,
-          channelKey: 'basic_channel',
-          title: 'EHS Bell Schedule',
-          body: notificationMessage,
-        ),
-      );
+    if (notificationTime != null && !notificationSent) {
+      _scheduleNotification(notificationTime, _currentClass);
       notificationSent = true;
     }
+  }
+
+  void _scheduleNotification(DateTime scheduledTime, String periodName) {
+    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+
+    String notificationMessage = periodName == 'Passing Period'
+        ? 'Passing Period ends in 1 minute!'
+        : '$periodName ends in $notificationTimeBeforeEnd minutes!';
+
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'basic_channel',
+        title: 'EHS Bell Schedule',
+        body: notificationMessage,
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar.fromDate(date: scheduledTime),
+    );
   }
 
   String _getDayOfWeek(DateTime now) {
@@ -280,7 +294,7 @@ class _HomePageState extends State<HomePage> {
       case 'Minimum Day':
         return 'Minimum Day Schedule';
       default:
-        return 'Testing schedule'; // Default = "No schedule"
+        return 'No schedule'; // Default = "No schedule"
     }
   }
 
@@ -296,11 +310,13 @@ class _HomePageState extends State<HomePage> {
           onNotificationTimeChanged: (int value) {
             setState(() {
               notificationTimeBeforeEnd = value;
+              notificationSent = false;
             });
           },
           onPassPeriodNotificationsChanged: (bool value) {
             setState(() {
               passPeriodNotificationsEnabled = value;
+              notificationSent = false;
             });
           },
           is24HourFormat: is24HourFormat,
@@ -340,14 +356,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _testNotification() {
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: 1,
-        channelKey: 'basic_channel',
-        title: 'EHS Bell Schedule',
-        body: 'Test notification!',
-      ),
-    );
+    DateTime now = DateTime.now().add(Duration(seconds: 10));
+    _scheduleNotification(now, 'Test Notification');
   }
 
   @override
@@ -413,7 +423,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Text(
                                 _timeLeft,
-                                style: const TextStyle(fontSize: 24, color: Colors.white),
+                                style: const TextStyle(fontSize: 30, color: Colors.white),
                               ),
                               const Text(
                                 'left',
