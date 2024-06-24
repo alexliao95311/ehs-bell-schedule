@@ -235,23 +235,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scheduleNotification(DateTime scheduledTime, String periodName) {
-    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
 
-    String notificationMessage = periodName == 'Passing Period'
-        ? 'Passing Period ends in 1 minute!'
-        : '$periodName ends in $notificationTimeBeforeEnd minutes!';
+  String notificationMessage = periodName == 'Passing Period'
+      ? 'Passing Period ends in 1 minute!'
+      : '$periodName ends in $notificationTimeBeforeEnd minutes!';
 
-    AwesomeNotifications().createNotification(
-      content: NotificationContent(
-        id: notificationId,
-        channelKey: 'basic_channel',
-        title: 'EHS Bell Schedule',
-        body: notificationMessage,
-        notificationLayout: NotificationLayout.Default,
-      ),
-      schedule: NotificationCalendar.fromDate(date: scheduledTime),
-    );
-  }
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: notificationId,
+      channelKey: 'basic_channel',
+      title: 'EHS Bell Schedule',
+      body: notificationMessage,
+      notificationLayout: NotificationLayout.Default,
+    ),
+    schedule: NotificationCalendar.fromDate(date: scheduledTime),
+  );
+}
+
 
   String _getDayOfWeek(DateTime now) {
     switch (now.weekday) {
@@ -356,9 +357,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _testNotification() {
-    DateTime now = DateTime.now().add(Duration(seconds: 10));
-    _scheduleNotification(now, 'Test Notification');
-  }
+  _scheduleTestNotification(DateTime.now().add(Duration(seconds: 1)));
+}
+
+void _scheduleTestNotification(DateTime scheduledTime) {
+  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: notificationId,
+      channelKey: 'basic_channel',
+      title: 'EHS Bell Schedule',
+      body: 'Test Notification!',
+      notificationLayout: NotificationLayout.Default,
+    ),
+    schedule: NotificationCalendar.fromDate(date: scheduledTime),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {
