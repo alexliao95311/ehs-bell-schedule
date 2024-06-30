@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_controller.dart';
 
 void main() async {
@@ -171,13 +172,45 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     AwesomeNotifications().setListeners(
-        onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-        onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-        onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-        onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod);
+      onActionReceivedMethod: NotificationController.onActionReceivedMethod,
+      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
+    );
     super.initState();
+    _loadSettings(); // Load settings when the app starts
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
+  }
+
+  Future<void> _loadSettings() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  setState(() {
+    notificationTimeBeforeEnd = prefs.getInt('notificationTimeBeforeEnd') ?? 2;
+    passPeriodNotificationsEnabled = prefs.getBool('passPeriodNotificationsEnabled') ?? false;
+    is24HourFormat = prefs.getBool('is24HourFormat') ?? false;
+    hasZeroPeriod = prefs.getBool('hasZeroPeriod') ?? true;
+    List<String>? savedCustomClassNames = prefs.getStringList('customClassNames');
+    if (savedCustomClassNames != null) {
+      customClassNames = {
+        for (String entry in savedCustomClassNames)
+          entry.split(':')[0]: entry.split(':')[1],
+      };
+    }
+  });
+}
+
+
+  Future<void> _saveSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('notificationTimeBeforeEnd', notificationTimeBeforeEnd);
+    await prefs.setBool('passPeriodNotificationsEnabled', passPeriodNotificationsEnabled);
+    await prefs.setBool('is24HourFormat', is24HourFormat);
+    await prefs.setBool('hasZeroPeriod', hasZeroPeriod);
+    await prefs.setStringList(
+      'customClassNames',
+      customClassNames.entries.map((e) => '${e.key}:${e.value}').toList(),
+    );
   }
 
   void _updateTimeAndClass() {
@@ -235,24 +268,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scheduleNotification(DateTime scheduledTime, String periodName) {
-  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
 
-  String notificationMessage = periodName == 'Passing Period'
-      ? 'Passing Period ends in 1 minute!'
-      : '$periodName ends in $notificationTimeBeforeEnd minutes!';
+    String notificationMessage = periodName == 'Passing Period'
+        ? 'Passing Period ends in 1 minute!'
+        : '$periodName ends in $notificationTimeBeforeEnd minutes!';
 
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: notificationId,
-      channelKey: 'basic_channel',
-      title: 'EHS Bell Schedule',
-      body: notificationMessage,
-      notificationLayout: NotificationLayout.Default,
-    ),
-    schedule: NotificationCalendar.fromDate(date: scheduledTime),
-  );
-}
-
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'basic_channel',
+        title: 'EHS Bell Schedule',
+        body: notificationMessage,
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar.fromDate(date: scheduledTime),
+    );
+  }
 
   String _getDayOfWeek(DateTime now) {
     switch (now.weekday) {
@@ -312,12 +344,14 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               notificationTimeBeforeEnd = value;
               notificationSent = false;
+              _saveSettings();  // Save settings when changed
             });
           },
           onPassPeriodNotificationsChanged: (bool value) {
             setState(() {
               passPeriodNotificationsEnabled = value;
               notificationSent = false;
+              _saveSettings();  // Save settings when changed
             });
           },
           is24HourFormat: is24HourFormat,
@@ -325,11 +359,13 @@ class _HomePageState extends State<HomePage> {
           on24HourFormatChanged: (bool value) {
             setState(() {
               is24HourFormat = value;
+              _saveSettings();  // Save settings when changed
             });
           },
           onZeroPeriodChanged: (bool value) {
             setState(() {
               hasZeroPeriod = value;
+              _saveSettings();  // Save settings when changed
             });
           },
         ),
@@ -338,6 +374,7 @@ class _HomePageState extends State<HomePage> {
       if (result != null) {
         setState(() {
           customClassNames = result;
+          _saveSettings();  // Save settings when changed
         });
       }
     });
@@ -357,24 +394,23 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _testNotification() {
-  _scheduleTestNotification(DateTime.now().add(Duration(seconds: 1)));
-}
+    _scheduleTestNotification(DateTime.now().add(Duration(seconds: 1)));
+  }
 
-void _scheduleTestNotification(DateTime scheduledTime) {
-  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+  void _scheduleTestNotification(DateTime scheduledTime) {
+    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
 
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: notificationId,
-      channelKey: 'basic_channel',
-      title: 'EHS Bell Schedule',
-      body: 'Test Notification!',
-      notificationLayout: NotificationLayout.Default,
-    ),
-    schedule: NotificationCalendar.fromDate(date: scheduledTime),
-  );
-}
-
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'basic_channel',
+        title: 'EHS Bell Schedule',
+        body: 'Test Notification!',
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule: NotificationCalendar.fromDate(date: scheduledTime),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -645,6 +681,20 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
     super.dispose();
   }
 
+  void _saveClassNames() async {
+    Map<String, String> updatedNames = {
+      for (var period in _controllers.keys)
+        period: _controllers[period]!.text,
+    };
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(
+      'customClassNames',
+      updatedNames.entries.map((e) => '${e.key}:${e.value}').toList(),
+    );
+    Navigator.pop(context, updatedNames);
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -698,13 +748,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
               }).toList(),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Map<String, String> updatedNames = {
-                    for (var period in _controllers.keys)
-                      period: _controllers[period]!.text,
-                  };
-                  Navigator.pop(context, updatedNames);
-                },
+                onPressed: _saveClassNames,
                 child: const Text('Save Class Names'),
               ),
             ],
@@ -743,6 +787,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
     super.initState();
     _notificationTimeBeforeEnd = widget.notificationTimeBeforeEnd;
     _passPeriodNotificationsEnabled = widget.passPeriodNotificationsEnabled;
+  }
+
+  void _saveSettings() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('notificationTimeBeforeEnd', _notificationTimeBeforeEnd);
+    await prefs.setBool('passPeriodNotificationsEnabled', _passPeriodNotificationsEnabled);
   }
 
   @override
@@ -798,6 +848,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       _notificationTimeBeforeEnd = value!;
                     });
                     widget.onNotificationTimeChanged(value!);
+                    _saveSettings();
                   },
                   decoration: InputDecoration(
                     filled: true,
@@ -858,9 +909,12 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
     _hasZeroPeriod = widget.hasZeroPeriod;
   }
 
-  void _saveSettings() {
+  void _saveSettings() async {
     widget.on24HourFormatChanged(_is24HourFormat);
     widget.onZeroPeriodChanged(_hasZeroPeriod);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('is24HourFormat', _is24HourFormat);
+    await prefs.setBool('hasZeroPeriod', _hasZeroPeriod);
     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
   }
 
