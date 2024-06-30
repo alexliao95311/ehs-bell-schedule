@@ -184,22 +184,21 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadSettings() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  setState(() {
-    notificationTimeBeforeEnd = prefs.getInt('notificationTimeBeforeEnd') ?? 2;
-    passPeriodNotificationsEnabled = prefs.getBool('passPeriodNotificationsEnabled') ?? false;
-    is24HourFormat = prefs.getBool('is24HourFormat') ?? false;
-    hasZeroPeriod = prefs.getBool('hasZeroPeriod') ?? true;
-    List<String>? savedCustomClassNames = prefs.getStringList('customClassNames');
-    if (savedCustomClassNames != null) {
-      customClassNames = {
-        for (String entry in savedCustomClassNames)
-          entry.split(':')[0]: entry.split(':')[1],
-      };
-    }
-  });
-}
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      notificationTimeBeforeEnd = prefs.getInt('notificationTimeBeforeEnd') ?? 2;
+      passPeriodNotificationsEnabled = prefs.getBool('passPeriodNotificationsEnabled') ?? false;
+      is24HourFormat = prefs.getBool('is24HourFormat') ?? false;
+      hasZeroPeriod = prefs.getBool('hasZeroPeriod') ?? true;
+      List<String>? savedCustomClassNames = prefs.getStringList('customClassNames');
+      if (savedCustomClassNames != null) {
+        customClassNames = {
+          for (String entry in savedCustomClassNames)
+            entry.split(':')[0]: entry.split(':')[1],
+        };
+      }
+    });
+  }
 
   Future<void> _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -386,6 +385,7 @@ class _HomePageState extends State<HomePage> {
       MaterialPageRoute(
         builder: (context) => InformationPage(
           schedules: schedules,
+          customClassNames: customClassNames,
           is24HourFormat: is24HourFormat,
           hasZeroPeriod: hasZeroPeriod,
         ),
@@ -1023,10 +1023,11 @@ class AboutPage extends StatelessWidget {
 
 class InformationPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> schedules;
+  final Map<String, String> customClassNames;
   final bool is24HourFormat;
   final bool hasZeroPeriod;
 
-  InformationPage({required this.schedules, required this.is24HourFormat, required this.hasZeroPeriod});
+  InformationPage({required this.schedules, required this.customClassNames, required this.is24HourFormat, required this.hasZeroPeriod});
 
   List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
     return schedule
@@ -1091,12 +1092,13 @@ class InformationPage extends StatelessWidget {
         ...filteredSchedule.asMap().entries.expand((entry) {
           int index = entry.key;
           Map<String, String> period = entry.value;
+          String periodName = customClassNames[period['period']] ?? period['period']!;
           return [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  period['period']!,
+                  periodName,
                   style: const TextStyle(fontSize: 18, color: Colors.white),
                 ),
                 Text(

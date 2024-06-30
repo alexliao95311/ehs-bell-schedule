@@ -10,4 +10,3 @@
 
 
 **Urgent To Fix**
-- test zero period settings???
