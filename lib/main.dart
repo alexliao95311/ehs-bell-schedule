@@ -1000,10 +1000,10 @@ class AboutPage extends StatelessWidget {
                 children: const [
                   Spacer(flex: 2),
                   Text(
-                    'Developed by Alex Liao and Arnav Kakani\n\n'
-                    'Designed by: \nSanjana Gowda\nShely Jain\nJan Palma\nJack Wu\n\n'
+                    'Developed by \n\n'
+                    'Designed by: \nSanjana Gowda\nJack Wu\n\n'
                     'From the first graduating class of Emerald High, Class of 2027.\n\n'
-                    'Version 1.0.0, released June 2024',
+                    'v1.1.1',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.0,
