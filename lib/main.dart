@@ -452,53 +452,58 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                if (_currentClass != 'No Class')
-                  SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        CircularProgressIndicator(
-                          value: 1 - _calculateProgress(), // Countdown counterclockwise
-                          strokeWidth: 10,
-                          backgroundColor: Colors.grey,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                        Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _timeLeft,
-                                style: const TextStyle(fontSize: 30, color: Colors.white),
-                              ),
-                              const Text(
-                                'left',
-                                style: TextStyle(fontSize: 16, color: Colors.white),
-                              ),
-                            ],
+          child: Padding(
+            padding: const EdgeInsets.only(top: 120.0), // Adjust padding here
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  if (_currentClass != 'No Class')
+                    SizedBox(
+                      height: 200,
+                      width: 200,
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          CircularProgressIndicator(
+                            value: 1 - _calculateProgress(), // Countdown counterclockwise
+                            strokeWidth: 10,
+                            backgroundColor: Colors.grey,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                           ),
-                        ),
-                      ],
+                          Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _timeLeft,
+                                  style: const TextStyle(fontSize: 30, color: Colors.white),
+                                ),
+                                Text(
+                                  'left',
+                                  style: const TextStyle(fontSize: 20, color: Colors.white), // Increased font size
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                const SizedBox(height: 20),
-                Text(
-                  _currentClass,
-                  style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                const SizedBox(height: 10),
-                if (_currentClass != 'No Class')
+                  const SizedBox(height: 20),
                   Text(
-                    _periodDuration,
-                    style: const TextStyle(fontSize: 24, color: Colors.white),
+                    _currentClass,
+                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+                    textAlign: TextAlign.center,
                   ),
-              ],
+                  const SizedBox(height: 10),
+                  if (_currentClass != 'No Class')
+                    Text(
+                      _periodDuration,
+                      style: const TextStyle(fontSize: 24, color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -719,7 +724,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
               const SizedBox(height: 20),
               ..._controllers.keys.where((period) => widget.hasZeroPeriod || period != 'Period 0').map((period) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextField(
                     controller: _controllers[period],
                     decoration: InputDecoration(
