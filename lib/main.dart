@@ -452,60 +452,68 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.only(top: 120.0), // Adjust padding here
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  if (_currentClass != 'No Class')
-                    SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          CircularProgressIndicator(
-                            value: 1 - _calculateProgress(), // Countdown counterclockwise
-                            strokeWidth: 10,
-                            backgroundColor: Colors.grey,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                          Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  _timeLeft,
-                                  style: const TextStyle(fontSize: 30, color: Colors.white),
-                                ),
-                                Text(
-                                  'left',
-                                  style: const TextStyle(fontSize: 20, color: Colors.white), // Increased font size
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  const SizedBox(height: 20),
-                  Text(
+          child: _currentClass == 'No Class'
+              ? Center(
+                  child: Text(
                     _currentClass,
                     style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 10),
-                  if (_currentClass != 'No Class')
-                    Text(
-                      _periodDuration,
-                      style: const TextStyle(fontSize: 24, color: Colors.white),
-                      textAlign: TextAlign.center,
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(top: 120.0), // Adjust padding here
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        if (_currentClass != 'No Class')
+                          SizedBox(
+                            height: 200,
+                            width: 200,
+                            child: Stack(
+                              fit: StackFit.expand,
+                              children: [
+                                CircularProgressIndicator(
+                                  value: 1 - _calculateProgress(), // Countdown counterclockwise
+                                  strokeWidth: 10,
+                                  backgroundColor: Colors.grey,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                                Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        _timeLeft,
+                                        style: const TextStyle(fontSize: 30, color: Colors.white),
+                                      ),
+                                      Text(
+                                        'left',
+                                        style: const TextStyle(fontSize: 20, color: Colors.white), // Increased font size
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        const SizedBox(height: 20),
+                        Text(
+                          _currentClass,
+                          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 10),
+                        if (_currentClass != 'No Class')
+                          Text(
+                            _periodDuration,
+                            style: const TextStyle(fontSize: 24, color: Colors.white),
+                            textAlign: TextAlign.center,
+                          ),
+                      ],
                     ),
-                ],
-              ),
-            ),
-          ),
+                  ),
+                ),
         ),
       ),
     );
