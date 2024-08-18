@@ -4,6 +4,8 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'notification_controller.dart';
+import 'package:flutter/gestures.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -1010,9 +1012,9 @@ class AboutPage extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Spacer(flex: 2),
-                  Text(
+                children: [
+                  const Spacer(flex: 2),
+                  const Text(
                     'Developed by Alex Liao\n\n'
                     'Designed by: \nSanjana Gowda\nJack Wu\n\n'
                     'From the first graduating class of Emerald High, Class of 2027.\n\n'
@@ -1023,7 +1025,44 @@ class AboutPage extends StatelessWidget {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  Spacer(flex: 3),
+                  const SizedBox(height: 20),
+                  RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: [
+                        const TextSpan(
+                          text: 'This project is open source. View the code on ',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        TextSpan(
+                          text: 'GitHub',
+                          style: const TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 18.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () async {
+                              const url = 'https://github.com/alexliao95311/ehs-bell-schedule';
+                              if (await canLaunch(url)) {
+                                await launch(url);
+                              }
+                            },
+                        ),
+                        const TextSpan(
+                          text: '.',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(flex: 3),
                 ],
               ),
             ),
