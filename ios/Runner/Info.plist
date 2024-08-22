@@ -50,17 +50,12 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs your permission to send notifications.</string>
+	
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>We need your location to show your position on the map</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>We need your location to show your position on the map</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

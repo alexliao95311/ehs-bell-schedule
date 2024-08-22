@@ -2,9 +2,13 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <application
-        android:label="ehs_bell_schedule"
+        android:label="EHS Schedule"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@mipmap/ic_stat_notif"/>
+        
         <service
             android:name="com.example.your_app.YourBackgroundService"
             android:permission="android.permission.BIND_JOB_SERVICE"

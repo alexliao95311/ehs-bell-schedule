@@ -42,6 +42,7 @@ class BellScheduleApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'EHS Bell Schedule',
       theme: ThemeData(
         primarySwatch: Colors.green,
