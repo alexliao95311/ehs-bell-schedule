@@ -997,7 +997,7 @@ class AboutPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text('About', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -1015,10 +1015,29 @@ class AboutPage extends StatelessWidget {
                 children: [
                   const Spacer(flex: 2),
                   const Text(
-                    'Developed by Alex Liao\n\n'
-                    'Designed by: \nSanjana Gowda\nJack Wu\n\n'
-                    'From the first graduating class of Emerald High, Class of 2027.\n\n'
-                    'v2.0.0',
+                    'Contributors',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.0,  // Increased font size
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const Text(
+                    'Alex Liao - Developer\n'
+                    'Justin Fu - Developer\n'
+                    'Sanjana Gowda - Designer\n'
+                    'Jack Wu - Designer\n'
+                    'Shely Jain - Idea',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'From the first graduating class of Emerald High, Class of 2027.',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.0,
@@ -1072,6 +1091,8 @@ class AboutPage extends StatelessWidget {
     );
   }
 }
+
+
 
 class InformationPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> schedules;
