@@ -182,6 +182,7 @@ class _HomePageState extends State<HomePage> {
     );
     super.initState();
     _loadSettings(); // Load settings when the app starts
+    _scheduleAccessNotification(); 
     _updateTimeAndClass(); // Initialize time and class
     Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
   }
@@ -414,7 +415,25 @@ class _HomePageState extends State<HomePage> {
       schedule: NotificationCalendar.fromDate(date: scheduledTime),
     );
   }
+  void _scheduleAccessNotification() {
+  // Schedule notification for Sunday at 8 PM
+  DateTime now = DateTime.now();
+  DateTime nextSunday = now.add(Duration(days: (7 - now.weekday) % 7));
+  DateTime scheduledTime = DateTime(nextSunday.year, nextSunday.month, nextSunday.day, 20, 0);
 
+  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for the notification
+
+  AwesomeNotifications().createNotification(
+    content: NotificationContent(
+      id: notificationId,
+      channelKey: 'basic_channel',
+      title: 'Sign Up for Access!',
+      body: 'This is your reminder to sign up for access.',
+      notificationLayout: NotificationLayout.Default,
+    ),
+    schedule: NotificationCalendar.fromDate(date: scheduledTime, repeats: true),
+  );
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -647,6 +666,20 @@ class SettingsPage extends StatelessWidget {
                 },
               ),
               const Divider(color: Colors.white, height: 2),
+              // New ListTile for Feedback Form at the end
+              ListTile(
+                title: const Text('Share Feedback', style: TextStyle(color: Colors.white)),
+                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                onTap: () async {
+                  const url = 'https://docs.google.com/forms/d/e/1FAIpQLScSu5zGeHd76Uukl2vmE4dMgj-q0bMv5wUooP5O3Nsu_S4A7g/viewform'; // Replace with your actual URL
+                  if (await canLaunch(url)) {
+                    await launch(url);
+                  } else {
+                    throw 'Could not launch $url';
+                  }
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
               ListTile(
                 title: const Text('About', style: TextStyle(color: Colors.white)),
                 trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
@@ -659,6 +692,7 @@ class SettingsPage extends StatelessWidget {
                   );
                 },
               ),
+              
             ],
           ),
         ),
@@ -1027,7 +1061,7 @@ class AboutPage extends StatelessWidget {
                   const Text(
                     'Alex Liao - Developer\n'
                     'Justin Fu - Developer\n'
-                    'Sanjana Gowda - Designer\n'
+                    'Sanjana Gowda - Developer\n'
                     'Jack Wu - Designer\n'
                     'Shely Jain - Idea',
                     style: TextStyle(
