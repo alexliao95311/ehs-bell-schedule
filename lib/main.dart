@@ -73,7 +73,8 @@ class _HomePageState extends State<HomePage> {
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
   bool passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
   bool is24HourFormat = false; // Default to 12-hour format
-  bool hasZeroPeriod = true; // Default to having zero period
+  bool hasZeroPeriod = false; // Default to not having zero period
+  bool hasPeriod7 = false; // Default to not showing Period 7
   Map<String, String> customClassNames = {
     'Period 0': 'Period 0',
     'Period 1': 'Period 1',
@@ -88,44 +89,52 @@ class _HomePageState extends State<HomePage> {
     'Monday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
       {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
-      {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
-      {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
-      {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
-      {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
-      {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
-      {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
+      {'start': '08:30', 'end': '09:22', 'period': 'Period 1'},
+      {'start': '09:22', 'end': '09:28', 'period': 'Passing Period'},
+      {'start': '09:28', 'end': '10:20', 'period': 'Period 2'},
+      {'start': '10:20', 'end': '10:26', 'period': 'Passing Period'},
+      {'start': '10:26', 'end': '11:18', 'period': 'Period 3'},
+      {'start': '11:18', 'end': '11:24', 'period': 'Passing Period'},
+      {'start': '11:24', 'end': '12:16', 'period': 'Period 4'},
+      {'start': '12:16', 'end': '12:51', 'period': 'Lunch'},
+      {'start': '12:51', 'end': '12:57', 'period': 'Passing Period'},
+      {'start': '12:57', 'end': '13:29', 'period': 'Access'},
+      {'start': '13:29', 'end': '13:35', 'period': 'Passing Period'},
+      {'start': '13:35', 'end': '14:27', 'period': 'Period 5'},
+      {'start': '14:27', 'end': '14:33', 'period': 'Passing Period'},
+      {'start': '14:33', 'end': '15:25', 'period': 'Period 6'},
+      {'start': '15:25', 'end': '15:31', 'period': 'Passing Period'},
+      {'start': '15:31', 'end': '16:36', 'period': 'Period 7'},
     ],
     'Tuesday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
       {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
-      {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
-      {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
-      {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
-      {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
-      {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
-      {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
+      {'start': '08:30', 'end': '09:28', 'period': 'Period 1'},
+      {'start': '09:28', 'end': '09:34', 'period': 'Passing Period'},
+      {'start': '09:34', 'end': '10:32', 'period': 'Period 2'},
+      {'start': '10:32', 'end': '10:38', 'period': 'Passing Period'},
+      {'start': '10:38', 'end': '11:38', 'period': 'Period 3'},
+      {'start': '11:38', 'end': '11:44', 'period': 'Passing Period'},
+      {'start': '11:44', 'end': '12:42', 'period': 'Period 4'},
+      {'start': '12:42', 'end': '13:17', 'period': 'Lunch'},
+      {'start': '13:17', 'end': '13:23', 'period': 'Passing Period'},
+      {'start': '13:23', 'end': '14:21', 'period': 'Period 5'},
+      {'start': '14:21', 'end': '14:27', 'period': 'Passing Period'},
+      {'start': '14:27', 'end': '15:25', 'period': 'Period 6'},
+      {'start': '15:25', 'end': '15:31', 'period': 'Passing Period'},
+      {'start': '15:31', 'end': '16:36', 'period': 'Period 7'},
     ],
     'Wednesday': [
+      {'start': '08:00', 'end': '08:55', 'period': 'Staff Collaboration'},
+      {'start': '08:55', 'end': '09:00', 'period': 'Passing Period'},
       {'start': '09:00', 'end': '10:30', 'period': 'Period 1'},
       {'start': '10:30', 'end': '10:36', 'period': 'Passing Period'},
       {'start': '10:36', 'end': '12:06', 'period': 'Period 3'},
-      {'start': '12:06', 'end': '12:36', 'period': 'Lunch'},
-      {'start': '12:36', 'end': '12:42', 'period': 'Passing Period'},
-      {'start': '12:42', 'end': '13:37', 'period': 'Access'},
-      {'start': '13:37', 'end': '13:43', 'period': 'Passing Period'},
-      {'start': '13:43', 'end': '15:13', 'period': 'Period 5'},
+      {'start': '12:06', 'end': '12:41', 'period': 'Lunch'},
+      {'start': '12:41', 'end': '12:47', 'period': 'Passing Period'},
+      {'start': '12:47', 'end': '13:49', 'period': 'Access'},
+      {'start': '13:49', 'end': '13:55', 'period': 'Passing Period'},
+      {'start': '13:55', 'end': '15:25', 'period': 'Period 5'},
     ],
     'Thursday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -133,27 +142,31 @@ class _HomePageState extends State<HomePage> {
       {'start': '08:30', 'end': '10:00', 'period': 'Period 2'},
       {'start': '10:00', 'end': '10:06', 'period': 'Passing Period'},
       {'start': '10:06', 'end': '11:36', 'period': 'Period 4'},
-      {'start': '11:36', 'end': '12:06', 'period': 'Lunch'},
-      {'start': '12:06', 'end': '12:12', 'period': 'Passing Period'},
-      {'start': '12:12', 'end': '12:57', 'period': 'Access'},
-      {'start': '12:57', 'end': '13:03', 'period': 'Passing Period'},
-      {'start': '13:03', 'end': '14:33', 'period': 'Period 6'},
+      {'start': '11:36', 'end': '12:11', 'period': 'Lunch'},
+      {'start': '12:11', 'end': '12:17', 'period': 'Passing Period'},
+      {'start': '12:17', 'end': '13:09', 'period': 'Access'},
+      {'start': '13:09', 'end': '13:15', 'period': 'Passing Period'},
+      {'start': '13:15', 'end': '14:45', 'period': 'Period 6'},
+      {'start': '14:45', 'end': '14:51', 'period': 'Passing Period'},
+      {'start': '14:51', 'end': '15:56', 'period': 'Period 7'},
     ],
     'Friday': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
       {'start': '08:20', 'end': '08:30', 'period': 'Passing Period'},
-      {'start': '08:30', 'end': '09:29', 'period': 'Period 1'},
-      {'start': '09:29', 'end': '09:35', 'period': 'Passing Period'},
-      {'start': '09:35', 'end': '10:34', 'period': 'Period 2'},
-      {'start': '10:34', 'end': '10:40', 'period': 'Passing Period'},
-      {'start': '10:40', 'end': '11:39', 'period': 'Period 3'},
-      {'start': '11:39', 'end': '11:45', 'period': 'Passing Period'},
-      {'start': '11:45', 'end': '12:44', 'period': 'Period 4'},
-      {'start': '12:44', 'end': '13:14', 'period': 'Lunch'},
-      {'start': '13:14', 'end': '13:20', 'period': 'Passing Period'},
-      {'start': '13:20', 'end': '14:19', 'period': 'Period 5'},
-      {'start': '14:19', 'end': '14:25', 'period': 'Passing Period'},
-      {'start': '14:25', 'end': '15:24', 'period': 'Period 6'},
+      {'start': '08:30', 'end': '09:28', 'period': 'Period 1'},
+      {'start': '09:28', 'end': '09:34', 'period': 'Passing Period'},
+      {'start': '09:34', 'end': '10:32', 'period': 'Period 2'},
+      {'start': '10:32', 'end': '10:38', 'period': 'Passing Period'},
+      {'start': '10:38', 'end': '11:38', 'period': 'Period 3'},
+      {'start': '11:38', 'end': '11:44', 'period': 'Passing Period'},
+      {'start': '11:44', 'end': '12:42', 'period': 'Period 4'},
+      {'start': '12:42', 'end': '13:17', 'period': 'Lunch'},
+      {'start': '13:17', 'end': '13:23', 'period': 'Passing Period'},
+      {'start': '13:23', 'end': '14:21', 'period': 'Period 5'},
+      {'start': '14:21', 'end': '14:27', 'period': 'Passing Period'},
+      {'start': '14:27', 'end': '15:25', 'period': 'Period 6'},
+      {'start': '15:25', 'end': '15:31', 'period': 'Passing Period'},
+      {'start': '15:31', 'end': '16:36', 'period': 'Period 7'},
     ],
     'Minimum Day': [
       {'start': '07:15', 'end': '08:20', 'period': 'Period 0'},
@@ -194,6 +207,7 @@ class _HomePageState extends State<HomePage> {
       passPeriodNotificationsEnabled = prefs.getBool('passPeriodNotificationsEnabled') ?? false;
       is24HourFormat = prefs.getBool('is24HourFormat') ?? false;
       hasZeroPeriod = prefs.getBool('hasZeroPeriod') ?? true;
+      hasPeriod7 = prefs.getBool('hasPeriod7') ?? true; // Add this line
       List<String>? savedCustomClassNames = prefs.getStringList('customClassNames');
       if (savedCustomClassNames != null) {
         customClassNames = {
@@ -210,6 +224,7 @@ class _HomePageState extends State<HomePage> {
     await prefs.setBool('passPeriodNotificationsEnabled', passPeriodNotificationsEnabled);
     await prefs.setBool('is24HourFormat', is24HourFormat);
     await prefs.setBool('hasZeroPeriod', hasZeroPeriod);
+    await prefs.setBool('hasPeriod7', hasPeriod7); // Add this line
     await prefs.setStringList(
       'customClassNames',
       customClassNames.entries.map((e) => '${e.key}:${e.value}').toList(),
@@ -230,6 +245,7 @@ class _HomePageState extends State<HomePage> {
 
     for (var period in schedule) {
       if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
+      if (!hasPeriod7 && period['period'] == 'Period 7') continue;
 
       DateTime start = DateTime(now.year, now.month, now.day,
           int.parse(period['start']!.split(':')[0]),
@@ -359,6 +375,7 @@ class _HomePageState extends State<HomePage> {
           },
           is24HourFormat: is24HourFormat,
           hasZeroPeriod: hasZeroPeriod,
+          hasPeriod7: hasPeriod7,
           on24HourFormatChanged: (bool value) {
             setState(() {
               is24HourFormat = value;
@@ -368,6 +385,12 @@ class _HomePageState extends State<HomePage> {
           onZeroPeriodChanged: (bool value) {
             setState(() {
               hasZeroPeriod = value;
+              _saveSettings();  // Save settings when changed
+            });
+          },
+          onPeriod7Changed: (bool value) {
+            setState(() {
+              hasPeriod7 = value;
               _saveSettings();  // Save settings when changed
             });
           },
@@ -392,6 +415,7 @@ class _HomePageState extends State<HomePage> {
           customClassNames: customClassNames,
           is24HourFormat: is24HourFormat,
           hasZeroPeriod: hasZeroPeriod,
+          hasPeriod7: hasPeriod7, // <-- Add this line
         ),
       ),
     );
@@ -548,6 +572,7 @@ class _HomePageState extends State<HomePage> {
 
     for (var period in schedule) {
       if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
+      if (!hasPeriod7 && period['period'] == 'Period 7') continue;
 
       DateTime start = DateTime(now.year, now.month, now.day,
           int.parse(period['start']!.split(':')[0]),
@@ -575,8 +600,10 @@ class SettingsPage extends StatelessWidget {
   final ValueChanged<bool> onPassPeriodNotificationsChanged;
   final bool is24HourFormat;
   final bool hasZeroPeriod;
+  final bool hasPeriod7;
   final ValueChanged<bool> on24HourFormatChanged;
   final ValueChanged<bool> onZeroPeriodChanged;
+  final ValueChanged<bool> onPeriod7Changed;
 
   SettingsPage({
     required this.customClassNames,
@@ -587,8 +614,10 @@ class SettingsPage extends StatelessWidget {
     required this.onPassPeriodNotificationsChanged,
     required this.is24HourFormat,
     required this.hasZeroPeriod,
+    required this.hasPeriod7,
     required this.on24HourFormatChanged,
     required this.onZeroPeriodChanged,
+    required this.onPeriod7Changed,
   });
 
   @override
@@ -658,8 +687,25 @@ class SettingsPage extends StatelessWidget {
                       builder: (context) => OtherSettingsPage(
                         is24HourFormat: is24HourFormat,
                         hasZeroPeriod: hasZeroPeriod,
-                        on24HourFormatChanged: on24HourFormatChanged,
-                        onZeroPeriodChanged: onZeroPeriodChanged,
+                        hasPeriod7: hasPeriod7,
+                        on24HourFormatChanged: (bool value) {
+                          setState(() {
+                            is24HourFormat = value;
+                            _saveSettings();
+                          });
+                        },
+                        onZeroPeriodChanged: (bool value) {
+                          setState(() {
+                            hasZeroPeriod = value;
+                            _saveSettings();
+                          });
+                        },
+                        onPeriod7Changed: (bool value) {
+                          setState(() {
+                            hasPeriod7 = value;
+                            _saveSettings();
+                          });
+                        },
                       ),
                     ),
                   );
@@ -934,14 +980,18 @@ class _NotificationsPageState extends State<NotificationsPage> {
 class OtherSettingsPage extends StatefulWidget {
   final bool is24HourFormat;
   final bool hasZeroPeriod;
+  final bool hasPeriod7;
   final ValueChanged<bool> on24HourFormatChanged;
   final ValueChanged<bool> onZeroPeriodChanged;
+  final ValueChanged<bool> onPeriod7Changed;
 
   OtherSettingsPage({
     required this.is24HourFormat,
     required this.hasZeroPeriod,
+    required this.hasPeriod7,
     required this.on24HourFormatChanged,
     required this.onZeroPeriodChanged,
+    required this.onPeriod7Changed,
   });
 
   @override
@@ -951,20 +1001,24 @@ class OtherSettingsPage extends StatefulWidget {
 class _OtherSettingsPageState extends State<OtherSettingsPage> {
   late bool _is24HourFormat;
   late bool _hasZeroPeriod;
+  late bool _hasPeriod7;
 
   @override
   void initState() {
     super.initState();
     _is24HourFormat = widget.is24HourFormat;
     _hasZeroPeriod = widget.hasZeroPeriod;
+    _hasPeriod7 = widget.hasPeriod7;
   }
 
   void _saveSettings() async {
     widget.on24HourFormatChanged(_is24HourFormat);
     widget.onZeroPeriodChanged(_hasZeroPeriod);
+    widget.onPeriod7Changed(_hasPeriod7);
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('is24HourFormat', _is24HourFormat);
     await prefs.setBool('hasZeroPeriod', _hasZeroPeriod);
+    await prefs.setBool('hasPeriod7', _hasPeriod7);
     Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
   }
 
@@ -1005,6 +1059,16 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
                 onChanged: (bool value) {
                   setState(() {
                     _hasZeroPeriod = value;
+                  });
+                },
+              ),
+              const Divider(color: Colors.white, height: 2),
+              SwitchListTile(
+                title: const Text('Show Period 7', style: TextStyle(color: Colors.white)),
+                value: _hasPeriod7,
+                onChanged: (bool value) {
+                  setState(() {
+                    _hasPeriod7 = value;
                   });
                 },
               ),
@@ -1062,6 +1126,7 @@ class AboutPage extends StatelessWidget {
                     'Alex Liao - Developer\n'
                     'Justin Fu - Developer\n'
                     'Sanjana Gowda - Developer\n'
+                    'Arnav Kakani - Developer\n'
                     'Jack Wu - Designer\n'
                     'Shely Jain - Idea',
                     style: TextStyle(
@@ -1134,12 +1199,22 @@ class InformationPage extends StatelessWidget {
   final Map<String, String> customClassNames;
   final bool is24HourFormat;
   final bool hasZeroPeriod;
+  final bool hasPeriod7; // <-- Add this line
 
-  InformationPage({required this.schedules, required this.customClassNames, required this.is24HourFormat, required this.hasZeroPeriod});
+  InformationPage({
+    required this.schedules,
+    required this.customClassNames,
+    required this.is24HourFormat,
+    required this.hasZeroPeriod,
+    required this.hasPeriod7, // <-- Add this line
+  });
 
   List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
     return schedule
-        .where((period) => period['period'] != 'Passing Period' && (hasZeroPeriod || period['period'] != 'Period 0'))
+        .where((period) =>
+          period['period'] != 'Passing Period' &&
+          (hasZeroPeriod || period['period'] != 'Period 0') &&
+          (hasPeriod7 || period['period'] != 'Period 7'))
         .toList();
   }
 
