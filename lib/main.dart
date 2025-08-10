@@ -29,7 +29,8 @@ void main() async {
     ],
   );
 
-  bool isAllowedToSendNotification = await AwesomeNotifications().isNotificationAllowed();
+  bool isAllowedToSendNotification =
+      await AwesomeNotifications().isNotificationAllowed();
   if (!isAllowedToSendNotification) {
     await AwesomeNotifications().requestPermissionToSendNotifications();
   }
@@ -71,7 +72,8 @@ class _HomePageState extends State<HomePage> {
   String _periodDuration = '';
   bool notificationSent = false;
   int notificationTimeBeforeEnd = 2; // Default to 2 minutes before class ends
-  bool passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
+  bool passPeriodNotificationsEnabled =
+      false; // Default to no notifications for passing periods
   bool is24HourFormat = false; // Default to 12-hour format
   bool hasZeroPeriod = false; // Default to not having zero period
   bool hasPeriod7 = false; // Default to not showing Period 7
@@ -189,39 +191,45 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: NotificationController.onActionReceivedMethod,
-      onNotificationCreatedMethod: NotificationController.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: NotificationController.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: NotificationController.onDismissActionReceivedMethod,
+      onNotificationCreatedMethod:
+          NotificationController.onNotificationCreatedMethod,
+      onNotificationDisplayedMethod:
+          NotificationController.onNotificationDisplayedMethod,
+      onDismissActionReceivedMethod:
+          NotificationController.onDismissActionReceivedMethod,
     );
     super.initState();
     _loadSettings(); // Load settings when the app starts
-    _scheduleAccessNotification(); 
+    _scheduleAccessNotification();
     _updateTimeAndClass(); // Initialize time and class
-    Timer.periodic(const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
+    Timer.periodic(
+        const Duration(seconds: 1), (Timer t) => _updateTimeAndClass());
   }
 
   Future<void> _loadSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      notificationTimeBeforeEnd = prefs.getInt('notificationTimeBeforeEnd') ?? 2;
-      passPeriodNotificationsEnabled = prefs.getBool('passPeriodNotificationsEnabled') ?? false;
+      notificationTimeBeforeEnd =
+          prefs.getInt('notificationTimeBeforeEnd') ?? 2;
+      passPeriodNotificationsEnabled =
+          prefs.getBool('passPeriodNotificationsEnabled') ?? false;
       is24HourFormat = prefs.getBool('is24HourFormat') ?? false;
       hasZeroPeriod = prefs.getBool('hasZeroPeriod') ?? true;
       hasPeriod7 = prefs.getBool('hasPeriod7') ?? true; // Add this line
-      List<String>? savedCustomClassNames = prefs.getStringList('customClassNames');
-      if (savedCustomClassNames != null) {
-        customClassNames = {
-          for (String entry in savedCustomClassNames)
-            entry.split(':')[0]: entry.split(':')[1],
-        };
-      }
+      List<String>? savedCustomClassNames =
+          prefs.getStringList('customClassNames');
+      customClassNames = {
+        for (final entry in (savedCustomClassNames ?? []))
+          if (entry.contains(':')) entry.split(':')[0]: entry.split(':')[1],
+      };
     });
   }
 
   Future<void> _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('notificationTimeBeforeEnd', notificationTimeBeforeEnd);
-    await prefs.setBool('passPeriodNotificationsEnabled', passPeriodNotificationsEnabled);
+    await prefs.setBool(
+        'passPeriodNotificationsEnabled', passPeriodNotificationsEnabled);
     await prefs.setBool('is24HourFormat', is24HourFormat);
     await prefs.setBool('hasZeroPeriod', hasZeroPeriod);
     await prefs.setBool('hasPeriod7', hasPeriod7); // Add this line
@@ -233,7 +241,9 @@ class _HomePageState extends State<HomePage> {
 
   void _updateTimeAndClass() {
     DateTime now = DateTime.now();
-    String formattedTime = DateFormat(is24HourFormat ? 'HH:mm:ss' : 'hh:mm:ss a').format(now); // Format time to 12-hour or 24-hour format
+    String formattedTime =
+        DateFormat(is24HourFormat ? 'HH:mm:ss' : 'hh:mm:ss a')
+            .format(now); // Format time to 12-hour or 24-hour format
 
     String day = _getDayOfWeek(now);
     List<Map<String, String>> schedule = schedules[day] ?? [];
@@ -247,24 +257,32 @@ class _HomePageState extends State<HomePage> {
       if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
       if (!hasPeriod7 && period['period'] == 'Period 7') continue;
 
-      DateTime start = DateTime(now.year, now.month, now.day,
+      DateTime start = DateTime(
+          now.year,
+          now.month,
+          now.day,
           int.parse(period['start']!.split(':')[0]),
           int.parse(period['start']!.split(':')[1]));
-      DateTime end = DateTime(now.year, now.month, now.day,
+      DateTime end = DateTime(
+          now.year,
+          now.month,
+          now.day,
           int.parse(period['end']!.split(':')[0]),
           int.parse(period['end']!.split(':')[1]));
 
       if (now.isAfter(start) && now.isBefore(end)) {
         currentClass = customClassNames[period['period']] ?? period['period']!;
         timeLeft = _formatDuration(end.difference(now));
-        periodDuration = '${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(start)} - ${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(end)}';
+        periodDuration =
+            '${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(start)} - ${DateFormat(is24HourFormat ? 'HH:mm' : 'hh:mm a').format(end)}';
 
         if (currentClass == 'Passing Period') {
           if (passPeriodNotificationsEnabled) {
             notificationTime = end.subtract(Duration(minutes: 1));
           }
         } else {
-          notificationTime = end.subtract(Duration(minutes: notificationTimeBeforeEnd));
+          notificationTime =
+              end.subtract(Duration(minutes: notificationTimeBeforeEnd));
         }
         break;
       }
@@ -287,7 +305,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scheduleNotification(DateTime scheduledTime, String periodName) {
-    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+    int notificationId =
+        scheduledTime.hashCode % 1000000; // Unique ID for each notification
 
     String notificationMessage = periodName == 'Passing Period'
         ? 'Passing Period ends in 1 minute!'
@@ -363,14 +382,14 @@ class _HomePageState extends State<HomePage> {
             setState(() {
               notificationTimeBeforeEnd = value;
               notificationSent = false;
-              _saveSettings();  // Save settings when changed
+              _saveSettings(); // Save settings when changed
             });
           },
           onPassPeriodNotificationsChanged: (bool value) {
             setState(() {
               passPeriodNotificationsEnabled = value;
               notificationSent = false;
-              _saveSettings();  // Save settings when changed
+              _saveSettings(); // Save settings when changed
             });
           },
           is24HourFormat: is24HourFormat,
@@ -379,19 +398,19 @@ class _HomePageState extends State<HomePage> {
           on24HourFormatChanged: (bool value) {
             setState(() {
               is24HourFormat = value;
-              _saveSettings();  // Save settings when changed
+              _saveSettings(); // Save settings when changed
             });
           },
           onZeroPeriodChanged: (bool value) {
             setState(() {
               hasZeroPeriod = value;
-              _saveSettings();  // Save settings when changed
+              _saveSettings(); // Save settings when changed
             });
           },
           onPeriod7Changed: (bool value) {
             setState(() {
               hasPeriod7 = value;
-              _saveSettings();  // Save settings when changed
+              _saveSettings(); // Save settings when changed
             });
           },
         ),
@@ -400,7 +419,7 @@ class _HomePageState extends State<HomePage> {
       if (result != null) {
         setState(() {
           customClassNames = result;
-          _saveSettings();  // Save settings when changed
+          _saveSettings(); // Save settings when changed
         });
       }
     });
@@ -426,7 +445,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scheduleTestNotification(DateTime scheduledTime) {
-    int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for each notification
+    int notificationId =
+        scheduledTime.hashCode % 1000000; // Unique ID for each notification
 
     AwesomeNotifications().createNotification(
       content: NotificationContent(
@@ -439,25 +459,30 @@ class _HomePageState extends State<HomePage> {
       schedule: NotificationCalendar.fromDate(date: scheduledTime),
     );
   }
+
   void _scheduleAccessNotification() {
-  // Schedule notification for Sunday at 8 PM
-  DateTime now = DateTime.now();
-  DateTime nextSunday = now.add(Duration(days: (7 - now.weekday) % 7));
-  DateTime scheduledTime = DateTime(nextSunday.year, nextSunday.month, nextSunday.day, 20, 0);
+    // Schedule notification for Sunday at 8 PM
+    DateTime now = DateTime.now();
+    DateTime nextSunday = now.add(Duration(days: (7 - now.weekday) % 7));
+    DateTime scheduledTime =
+        DateTime(nextSunday.year, nextSunday.month, nextSunday.day, 20, 0);
 
-  int notificationId = scheduledTime.hashCode % 1000000; // Unique ID for the notification
+    int notificationId =
+        scheduledTime.hashCode % 1000000; // Unique ID for the notification
 
-  AwesomeNotifications().createNotification(
-    content: NotificationContent(
-      id: notificationId,
-      channelKey: 'basic_channel',
-      title: 'Sign Up for Access!',
-      body: 'This is your reminder to sign up for access.',
-      notificationLayout: NotificationLayout.Default,
-    ),
-    schedule: NotificationCalendar.fromDate(date: scheduledTime, repeats: true),
-  );
-}
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: notificationId,
+        channelKey: 'basic_channel',
+        title: 'Sign Up for Access!',
+        body: 'This is your reminder to sign up for access.',
+        notificationLayout: NotificationLayout.Default,
+      ),
+      schedule:
+          NotificationCalendar.fromDate(date: scheduledTime, repeats: true),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -502,12 +527,16 @@ class _HomePageState extends State<HomePage> {
               ? Center(
                   child: Text(
                     _currentClass,
-                    style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: const TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 )
               : Padding(
-                  padding: const EdgeInsets.only(top: 120.0), // Adjust padding here
+                  padding:
+                      const EdgeInsets.only(top: 120.0), // Adjust padding here
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -520,10 +549,12 @@ class _HomePageState extends State<HomePage> {
                               fit: StackFit.expand,
                               children: [
                                 CircularProgressIndicator(
-                                  value: 1 - _calculateProgress(), // Countdown counterclockwise
+                                  value: 1 -
+                                      _calculateProgress(), // Countdown counterclockwise
                                   strokeWidth: 10,
                                   backgroundColor: Colors.grey,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                                 Center(
                                   child: Column(
@@ -531,11 +562,15 @@ class _HomePageState extends State<HomePage> {
                                     children: [
                                       Text(
                                         _timeLeft,
-                                        style: const TextStyle(fontSize: 30, color: Colors.white),
+                                        style: const TextStyle(
+                                            fontSize: 30, color: Colors.white),
                                       ),
                                       Text(
                                         'left',
-                                        style: const TextStyle(fontSize: 20, color: Colors.white), // Increased font size
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            color: Colors
+                                                .white), // Increased font size
                                       ),
                                     ],
                                   ),
@@ -546,14 +581,18 @@ class _HomePageState extends State<HomePage> {
                         const SizedBox(height: 20),
                         Text(
                           _currentClass,
-                          style: const TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: Colors.white),
+                          style: const TextStyle(
+                              fontSize: 36,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 10),
                         if (_currentClass != 'No Class')
                           Text(
                             _periodDuration,
-                            style: const TextStyle(fontSize: 24, color: Colors.white),
+                            style: const TextStyle(
+                                fontSize: 24, color: Colors.white),
                             textAlign: TextAlign.center,
                           ),
                       ],
@@ -574,10 +613,16 @@ class _HomePageState extends State<HomePage> {
       if (!hasZeroPeriod && period['period'] == 'Period 0') continue;
       if (!hasPeriod7 && period['period'] == 'Period 7') continue;
 
-      DateTime start = DateTime(now.year, now.month, now.day,
+      DateTime start = DateTime(
+          now.year,
+          now.month,
+          now.day,
           int.parse(period['start']!.split(':')[0]),
           int.parse(period['start']!.split(':')[1]));
-      DateTime end = DateTime(now.year, now.month, now.day,
+      DateTime end = DateTime(
+          now.year,
+          now.month,
+          now.day,
           int.parse(period['end']!.split(':')[0]),
           int.parse(period['end']!.split(':')[1]));
 
@@ -628,7 +673,8 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Make the back arrow white
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -642,13 +688,17 @@ class SettingsPage extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             children: [
               ListTile(
-                title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                title: const Text('Edit Class Names',
+                    style: TextStyle(color: Colors.white)),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditClassNamesPage(customClassNames: customClassNames, hasZeroPeriod: hasZeroPeriod),
+                      builder: (context) => EditClassNamesPage(
+                          customClassNames: customClassNames,
+                          hasZeroPeriod: hasZeroPeriod),
                     ),
                   ).then((result) {
                     if (result != null) {
@@ -659,8 +709,10 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(color: Colors.white, height: 2),
               ListTile(
-                title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                title: const Text('Notifications',
+                    style: TextStyle(color: Colors.white)),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -668,9 +720,11 @@ class SettingsPage extends StatelessWidget {
                       builder: (context) => NotificationsPage(
                         testNotificationCallback: testNotificationCallback,
                         notificationTimeBeforeEnd: notificationTimeBeforeEnd,
-                        passPeriodNotificationsEnabled: passPeriodNotificationsEnabled,
+                        passPeriodNotificationsEnabled:
+                            passPeriodNotificationsEnabled,
                         onNotificationTimeChanged: onNotificationTimeChanged,
-                        onPassPeriodNotificationsChanged: onPassPeriodNotificationsChanged,
+                        onPassPeriodNotificationsChanged:
+                            onPassPeriodNotificationsChanged,
                       ),
                     ),
                   );
@@ -678,8 +732,10 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(color: Colors.white, height: 2),
               ListTile(
-                title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                title: const Text('Other Settings',
+                    style: TextStyle(color: Colors.white)),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -688,24 +744,10 @@ class SettingsPage extends StatelessWidget {
                         is24HourFormat: is24HourFormat,
                         hasZeroPeriod: hasZeroPeriod,
                         hasPeriod7: hasPeriod7,
-                        on24HourFormatChanged: (bool value) {
-                          setState(() {
-                            is24HourFormat = value;
-                            _saveSettings();
-                          });
-                        },
-                        onZeroPeriodChanged: (bool value) {
-                          setState(() {
-                            hasZeroPeriod = value;
-                            _saveSettings();
-                          });
-                        },
-                        onPeriod7Changed: (bool value) {
-                          setState(() {
-                            hasPeriod7 = value;
-                            _saveSettings();
-                          });
-                        },
+                        // ⬇️ forward the callbacks from SettingsPage (provided by HomePage)
+                        on24HourFormatChanged: on24HourFormatChanged,
+                        onZeroPeriodChanged: onZeroPeriodChanged,
+                        onPeriod7Changed: onPeriod7Changed,
                       ),
                     ),
                   );
@@ -714,10 +756,13 @@ class SettingsPage extends StatelessWidget {
               const Divider(color: Colors.white, height: 2),
               // New ListTile for Feedback Form at the end
               ListTile(
-                title: const Text('Share Feedback', style: TextStyle(color: Colors.white)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                title: const Text('Share Feedback',
+                    style: TextStyle(color: Colors.white)),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () async {
-                  const url = 'https://docs.google.com/forms/d/e/1FAIpQLScSu5zGeHd76Uukl2vmE4dMgj-q0bMv5wUooP5O3Nsu_S4A7g/viewform'; // Replace with your actual URL
+                  const url =
+                      'https://docs.google.com/forms/d/e/1FAIpQLScSu5zGeHd76Uukl2vmE4dMgj-q0bMv5wUooP5O3Nsu_S4A7g/viewform'; // Replace with your actual URL
                   if (await canLaunch(url)) {
                     await launch(url);
                   } else {
@@ -727,8 +772,10 @@ class SettingsPage extends StatelessWidget {
               ),
               const Divider(color: Colors.white, height: 2),
               ListTile(
-                title: const Text('About', style: TextStyle(color: Colors.white)),
-                trailing: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                title:
+                    const Text('About', style: TextStyle(color: Colors.white)),
+                trailing:
+                    const Icon(Icons.arrow_forward_ios, color: Colors.white),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -738,7 +785,6 @@ class SettingsPage extends StatelessWidget {
                   );
                 },
               ),
-              
             ],
           ),
         ),
@@ -751,7 +797,8 @@ class EditClassNamesPage extends StatefulWidget {
   final Map<String, String> customClassNames;
   final bool hasZeroPeriod;
 
-  EditClassNamesPage({required this.customClassNames, required this.hasZeroPeriod});
+  EditClassNamesPage(
+      {required this.customClassNames, required this.hasZeroPeriod});
 
   @override
   _EditClassNamesPageState createState() => _EditClassNamesPageState();
@@ -779,8 +826,7 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
 
   void _saveClassNames() async {
     Map<String, String> updatedNames = {
-      for (var period in _controllers.keys)
-        period: _controllers[period]!.text,
+      for (var period in _controllers.keys) period: _controllers[period]!.text,
     };
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(
@@ -790,7 +836,6 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
     Navigator.pop(context, updatedNames);
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -798,8 +843,10 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Edit Class Names', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        title: const Text('Edit Class Names',
+            style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Make the back arrow white
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -813,7 +860,10 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
             padding: const EdgeInsets.all(16.0),
             children: [
               const SizedBox(height: 20),
-              ..._controllers.keys.where((period) => widget.hasZeroPeriod || period != 'Period 0').map((period) {
+              ..._controllers.keys
+                  .where(
+                      (period) => widget.hasZeroPeriod || period != 'Period 0')
+                  .map((period) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextField(
@@ -822,7 +872,8 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
                       labelText: period,
                       labelStyle: const TextStyle(color: Colors.white),
                       filled: true,
-                      fillColor: Color.fromARGB(255, 39, 59, 40).withOpacity(0.3),
+                      fillColor:
+                          Color.fromARGB(255, 39, 59, 40).withOpacity(0.3),
                       border: OutlineInputBorder(),
                       suffixIcon: _controllers[period]!.text.isNotEmpty
                           ? IconButton(
@@ -876,7 +927,8 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   int _notificationTimeBeforeEnd = 2; // Default to 2 minutes
-  bool _passPeriodNotificationsEnabled = false; // Default to no notifications for passing periods
+  bool _passPeriodNotificationsEnabled =
+      false; // Default to no notifications for passing periods
 
   @override
   void initState() {
@@ -888,7 +940,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void _saveSettings() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('notificationTimeBeforeEnd', _notificationTimeBeforeEnd);
-    await prefs.setBool('passPeriodNotificationsEnabled', _passPeriodNotificationsEnabled);
+    await prefs.setBool(
+        'passPeriodNotificationsEnabled', _passPeriodNotificationsEnabled);
   }
 
   @override
@@ -898,8 +951,10 @@ class _NotificationsPageState extends State<NotificationsPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Notifications', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        title:
+            const Text('Notifications', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Make the back arrow white
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -914,7 +969,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Notify me before class ends:', style: TextStyle(color: Colors.white)),
+                const Text('Notify me before class ends:',
+                    style: TextStyle(color: Colors.white)),
                 DropdownButtonFormField<int>(
                   value: _notificationTimeBeforeEnd,
                   items: const [
@@ -956,7 +1012,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(color: Colors.white),
                     ),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                   style: TextStyle(color: Colors.white),
                   dropdownColor: Color.fromARGB(255, 33, 59, 34),
@@ -1019,7 +1076,8 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
     await prefs.setBool('is24HourFormat', _is24HourFormat);
     await prefs.setBool('hasZeroPeriod', _hasZeroPeriod);
     await prefs.setBool('hasPeriod7', _hasPeriod7);
-    Navigator.popUntil(context, ModalRoute.withName(Navigator.defaultRouteName));
+    Navigator.popUntil(
+        context, ModalRoute.withName(Navigator.defaultRouteName));
   }
 
   @override
@@ -1029,8 +1087,10 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Other Settings', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        title:
+            const Text('Other Settings', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Make the back arrow white
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -1044,7 +1104,8 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
             padding: const EdgeInsets.all(16.0),
             children: [
               SwitchListTile(
-                title: const Text('24-Hour Time Format', style: TextStyle(color: Colors.white)),
+                title: const Text('24-Hour Time Format',
+                    style: TextStyle(color: Colors.white)),
                 value: _is24HourFormat,
                 onChanged: (bool value) {
                   setState(() {
@@ -1054,7 +1115,8 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
               ),
               const Divider(color: Colors.white, height: 2),
               SwitchListTile(
-                title: const Text('Show Zero Period', style: TextStyle(color: Colors.white)),
+                title: const Text('Show Zero Period',
+                    style: TextStyle(color: Colors.white)),
                 value: _hasZeroPeriod,
                 onChanged: (bool value) {
                   setState(() {
@@ -1064,7 +1126,8 @@ class _OtherSettingsPageState extends State<OtherSettingsPage> {
               ),
               const Divider(color: Colors.white, height: 2),
               SwitchListTile(
-                title: const Text('Show Period 7', style: TextStyle(color: Colors.white)),
+                title: const Text('Show Period 7',
+                    style: TextStyle(color: Colors.white)),
                 value: _hasPeriod7,
                 onChanged: (bool value) {
                   setState(() {
@@ -1117,7 +1180,7 @@ class AboutPage extends StatelessWidget {
                     'Contributors',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 24.0,  // Increased font size
+                      fontSize: 24.0, // Increased font size
                       fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
@@ -1127,8 +1190,8 @@ class AboutPage extends StatelessWidget {
                     'Justin Fu - Developer\n'
                     'Sanjana Gowda - Developer\n'
                     'Arnav Kakani - Developer\n'
-                    'Jack Wu - Designer\n'
-                    'Shely Jain - Idea',
+                    'Shely Jain - Developer\n'
+                    'Jack Wu - Designer',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18.0,
@@ -1150,7 +1213,8 @@ class AboutPage extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         const TextSpan(
-                          text: 'This project is open source. View the code on ',
+                          text:
+                              'This project is open source. View the code on ',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 18.0,
@@ -1165,7 +1229,8 @@ class AboutPage extends StatelessWidget {
                           ),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () async {
-                              const url = 'https://github.com/alexliao95311/ehs-bell-schedule';
+                              const url =
+                                  'https://github.com/alexliao95311/ehs-bell-schedule';
                               if (await canLaunch(url)) {
                                 await launch(url);
                               }
@@ -1192,8 +1257,6 @@ class AboutPage extends StatelessWidget {
   }
 }
 
-
-
 class InformationPage extends StatelessWidget {
   final Map<String, List<Map<String, String>>> schedules;
   final Map<String, String> customClassNames;
@@ -1209,12 +1272,13 @@ class InformationPage extends StatelessWidget {
     required this.hasPeriod7, // <-- Add this line
   });
 
-  List<Map<String, String>> _filterSchedule(List<Map<String, String>> schedule) {
+  List<Map<String, String>> _filterSchedule(
+      List<Map<String, String>> schedule) {
     return schedule
         .where((period) =>
-          period['period'] != 'Passing Period' &&
-          (hasZeroPeriod || period['period'] != 'Period 0') &&
-          (hasPeriod7 || period['period'] != 'Period 7'))
+            period['period'] != 'Passing Period' &&
+            (hasZeroPeriod || period['period'] != 'Period 0') &&
+            (hasPeriod7 || period['period'] != 'Period 7'))
         .toList();
   }
 
@@ -1233,8 +1297,10 @@ class InformationPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('All Schedules', style: TextStyle(color: Colors.white)),
-        iconTheme: const IconThemeData(color: Colors.white), // Make the back arrow white
+        title:
+            const Text('All Schedules', style: TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(
+            color: Colors.white), // Make the back arrow white
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -1247,11 +1313,16 @@ class InformationPage extends StatelessWidget {
           child: ListView(
             padding: const EdgeInsets.all(16.0),
             children: [
-              _buildScheduleSection('Today\'s Schedule (${day})', schedules[day] ?? []),
-              _buildScheduleSection('Mon/Tue/Fri Schedule', schedules['Monday'] ?? []),
-              _buildScheduleSection('Wednesday Schedule', schedules['Wednesday'] ?? []),
-              _buildScheduleSection('Thursday Schedule', schedules['Thursday'] ?? []),
-              _buildScheduleSection('Minimum Day Schedule', schedules['Minimum Day'] ?? []),
+              _buildScheduleSection(
+                  'Today\'s Schedule (${day})', schedules[day] ?? []),
+              _buildScheduleSection(
+                  'Mon/Tue/Fri Schedule', schedules['Monday'] ?? []),
+              _buildScheduleSection(
+                  'Wednesday Schedule', schedules['Wednesday'] ?? []),
+              _buildScheduleSection(
+                  'Thursday Schedule', schedules['Thursday'] ?? []),
+              _buildScheduleSection(
+                  'Minimum Day Schedule', schedules['Minimum Day'] ?? []),
             ],
           ),
         ),
@@ -1259,7 +1330,8 @@ class InformationPage extends StatelessWidget {
     );
   }
 
-  Widget _buildScheduleSection(String title, List<Map<String, String>> schedule) {
+  Widget _buildScheduleSection(
+      String title, List<Map<String, String>> schedule) {
     List<Map<String, String>> filteredSchedule = _filterSchedule(schedule);
 
     return Column(
@@ -1267,15 +1339,18 @@ class InformationPage extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+          style: const TextStyle(
+              fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
         ),
         const SizedBox(height: 10),
         if (filteredSchedule.isEmpty)
-          const Text('No schedule today', style: TextStyle(fontSize: 16, color: Colors.white)),
+          const Text('No schedule today',
+              style: TextStyle(fontSize: 16, color: Colors.white)),
         ...filteredSchedule.asMap().entries.expand((entry) {
           int index = entry.key;
           Map<String, String> period = entry.value;
-          String periodName = customClassNames[period['period']] ?? period['period']!;
+          String periodName =
+              customClassNames[period['period']] ?? period['period']!;
           return [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1290,7 +1365,8 @@ class InformationPage extends StatelessWidget {
                 ),
               ],
             ),
-            if (index < filteredSchedule.length - 1) Divider(color: Colors.grey[400]),
+            if (index < filteredSchedule.length - 1)
+              Divider(color: Colors.grey[400]),
           ];
         }).toList(),
         const SizedBox(height: 20),
