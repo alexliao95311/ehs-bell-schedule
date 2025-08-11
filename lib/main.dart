@@ -696,9 +696,10 @@ class SettingsPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditClassNamesPage(
-                          customClassNames: customClassNames,
-                          hasZeroPeriod: hasZeroPeriod),
+                                              builder: (context) => EditClassNamesPage(
+                            customClassNames: customClassNames,
+                            hasZeroPeriod: hasZeroPeriod,
+                            hasPeriod7: hasPeriod7),
                     ),
                   ).then((result) {
                     if (result != null) {
@@ -796,9 +797,13 @@ class SettingsPage extends StatelessWidget {
 class EditClassNamesPage extends StatefulWidget {
   final Map<String, String> customClassNames;
   final bool hasZeroPeriod;
+  final bool hasPeriod7;
 
-  EditClassNamesPage(
-      {required this.customClassNames, required this.hasZeroPeriod});
+  EditClassNamesPage({
+    required this.customClassNames, 
+    required this.hasZeroPeriod,
+    required this.hasPeriod7,
+  });
 
   @override
   _EditClassNamesPageState createState() => _EditClassNamesPageState();
@@ -810,10 +815,37 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
   @override
   void initState() {
     super.initState();
-    _controllers = {
-      for (var period in widget.customClassNames.keys)
-        period: TextEditingController(text: widget.customClassNames[period]),
+    // Create controllers for all periods, with fallback to default names if customClassNames is empty
+    Map<String, String> defaultClassNames = {
+      'Period 0': 'Period 0',
+      'Period 1': 'Period 1',
+      'Period 2': 'Period 2',
+      'Period 3': 'Period 3',
+      'Period 4': 'Period 4',
+      'Period 5': 'Period 5',
+      'Period 6': 'Period 6',
+      'Period 7': 'Period 7',
     };
+    
+    Map<String, String> classNamesToUse = widget.customClassNames.isNotEmpty 
+        ? widget.customClassNames 
+        : defaultClassNames;
+    
+    // Filter out Period 0 and Period 7 based on settings
+    Map<String, String> filteredClassNames = {};
+    for (var period in classNamesToUse.keys) {
+      if (period == 'Period 0' && !widget.hasZeroPeriod) continue;
+      if (period == 'Period 7' && !widget.hasPeriod7) continue;
+      filteredClassNames[period] = classNamesToUse[period]!;
+    }
+    
+    _controllers = {
+      for (var period in filteredClassNames.keys)
+        period: TextEditingController(text: filteredClassNames[period]),
+    };
+    
+    print('EditClassNamesPage: Created ${_controllers.length} controllers');
+    print('EditClassNamesPage: Keys: ${_controllers.keys.toList()}');
   }
 
   @override
@@ -860,10 +892,8 @@ class _EditClassNamesPageState extends State<EditClassNamesPage> {
             padding: const EdgeInsets.all(16.0),
             children: [
               const SizedBox(height: 20),
-              ..._controllers.keys
-                  .where(
-                      (period) => widget.hasZeroPeriod || period != 'Period 0')
-                  .map((period) {
+
+              ..._controllers.keys.map((period) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextField(
